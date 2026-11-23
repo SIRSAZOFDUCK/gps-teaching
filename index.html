@@ -388,7 +388,12 @@
   // ---------- controls ----------
   document.querySelectorAll('.levels button').forEach(b => b.addEventListener('click', () => setLevel(+b.dataset.l)));
   $('next').addEventListener('click', () => { if (S.level < 5) setLevel(S.level + 1); else $('closing').hidden = false; });
-  $('newphone').addEventListener('click', () => { newPhone(); if (S.level === 5) setLevel(5); });
+  $('newphone').addEventListener('click', () => {   // start again from Level 1: new hidden phone, all satellites back in the bar
+    newPhone();
+    S.sats.forEach((s, i) => Object.assign(s, { x: DOCK[i][0], y: DOCK[i][1], placed: false }));
+    S.err = 0; $('err').value = 0;
+    setLevel(1);
+  });
   $('err').addEventListener('input', e => {
     S.err = +e.target.value; S.fixed = false;
     if (S.level === 4) say(S.err > 0.005 ? `Every circle grows by ${Math.round(S.err * 300)} m, so they don't meet.` : 'No error: the circles meet at the phone.');
