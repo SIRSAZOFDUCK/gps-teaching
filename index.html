@@ -311,17 +311,15 @@
     if (!S.drag) return;
     const p = toMap(e);
     let x = Math.min(975, Math.max(25, p.x)), y = Math.min(975, Math.max(25, p.y));
-    const dx = x - 500, dy = y - 500;
-    if (Math.abs(dx) < SKY && Math.abs(dy) < SKY && y > DOCK_Y) {   // keep satellites out in the sky zone
-      if (Math.abs(dx) > Math.abs(dy)) x = 500 + Math.sign(dx || 1) * SKY; else y = 500 + Math.sign(dy || 1) * SKY;
-    }
+    // follow the finger freely; a satellite in the middle has no circle until it's back in the sky zone
     S.drag.x = x; S.drag.y = y;
-    S.drag.placed = S.drag.y > DOCK_Y;
+    S.drag.placed = y > DOCK_Y && !inMiddle(S.drag);
     render();
   });
   function end(e) {
     if (S.drag) {
       const s = S.drag; S.drag = null;
+      if (s.y > DOCK_Y && inMiddle(s)) { glideToSky(s); return; }   // dropped in the middle: glide out to the sky zone
       if (!s.placed) { s.x = DOCK[s.id - 1][0]; s.y = DOCK[s.id - 1][1]; }
       else if (!s.wasPlaced) { pulse(s); }
       render(); afterMove(s);
@@ -330,6 +328,20 @@
       if (moved < 12 && down.p.y > DOCK_Y) guess(down.p);
       down = null;
     }
+  }
+  function inMiddle(p) { return Math.abs(p.x - 500) < SKY && Math.abs(p.y - 500) < SKY; }
+  function glideToSky(s) {
+    const dx = s.x - 500, dy = s.y - 500, x0 = s.x, y0 = s.y;
+    const tx = Math.abs(dx) > Math.abs(dy) ? 500 + Math.sign(dx || 1) * SKY : x0;
+    const ty = Math.abs(dx) > Math.abs(dy) ? y0 : 500 + Math.sign(dy || 1) * SKY;
+    const t0 = performance.now();
+    (function step(now) {
+      const t = Math.min(1, (now - t0) / 220), e = 1 - (1 - t) ** 3;
+      s.x = x0 + (tx - x0) * e; s.y = y0 + (ty - y0) * e;
+      if (t < 1) { render(); requestAnimationFrame(step); return; }
+      s.placed = true; if (!s.wasPlaced) pulse(s);
+      render(); afterMove(s);
+    })(t0);
   }
   svg.addEventListener('pointerup', end);
   svg.addEventListener('pointercancel', end);
