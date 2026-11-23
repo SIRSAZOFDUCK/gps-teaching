@@ -144,7 +144,7 @@
   const SKY = 160, SKY_OUT = 240;  // the sky zone is the band between these distances from the centre
   const PHONE_BOX = 110;           // the phone hides within this distance of the centre
   const LEVELS = {
-    1: { n:1, name:'Level 1 · One satellite', prompt:'Drag satellite 1 into the sky zone.' },
+    1: { n:1, name:'Level 1 · One satellite', prompt:'Drag satellite 1 onto the map.' },
     2: { n:2, name:'Level 2 · Two satellites', prompt:'Add satellite 2. The phone is on both circles. Tap where you think the phone is.' },
     3: { n:3, name:'Level 3 · Three satellites', prompt:'Add satellite 3. The phone is on all three circles. Tap where you think the phone is.' },
     4: { n:3, name:'Level 4 · The cheap clock', prompt:"Phone clocks aren't accurate. See what happens when you increase the phone clock's error." },
@@ -174,10 +174,6 @@
     const streets = ['M-20 420 C 200 380, 380 470, 560 430 S 880 360, 1020 400', 'M300 -20 C 330 220, 260 420, 320 640 S 380 900, 340 1020',
                      'M640 1020 C 660 820, 720 700, 700 520 S 760 200, 820 -20', 'M-20 760 C 220 740, 480 800, 1020 720'];
     for (const d of streets) s += `<path d="${d}" fill="none" stroke="#1a3866" stroke-width="7" stroke-linecap="round" opacity=".7"/>`;
-    // shaded outer sky zone (satellites go here)
-    const o = 500 - SKY_OUT, i = 500 - SKY, wo = 2 * SKY_OUT, wi = 2 * SKY;
-    s += `<path d="M${o} ${o}h${wo}v${wo}h${-wo}Z M${i} ${i}v${wi}h${wi}v${-wi}Z" fill="rgba(34,211,238,.10)" fill-rule="evenodd"/>`;
-    s += `<rect x="${o}" y="${o}" width="${wo}" height="${wo}" fill="none" stroke="rgba(34,211,238,.35)" stroke-width="1.5" vector-effect="non-scaling-stroke"/>`;
     s += `<line x1="0" y1="${DOCK_Y}" x2="1000" y2="${DOCK_Y}" stroke="#2a4a7c" stroke-dasharray="6 8" vector-effect="non-scaling-stroke"/>`;
     $('bg').innerHTML = s;
   })();
@@ -225,6 +221,11 @@
     const lv = LEVELS[S.level], act = active(), pl = placed();
     const circles = pl.map(p => ({ x: p.x, y: p.y, r: radius(p), id: p.id }));
     const fuzzy = S.err > 0.001 ? ' fuzzy' : '';
+    if (S.drag) {   // the sky zone only shows while a satellite is being dragged, so it never looks like a boundary for guesses
+      const o = 500 - SKY_OUT, i = 500 - SKY, wo = 2 * SKY_OUT, wi = 2 * SKY, zf = Math.min(15 * k, 40);
+      s += `<path d="M${o} ${o}h${wo}v${wo}h${-wo}Z M${i} ${i}v${wi}h${wi}v${-wi}Z" fill="rgba(34,211,238,.16)" stroke="rgba(34,211,238,.6)" stroke-width="1.5" vector-effect="non-scaling-stroke" fill-rule="evenodd"/>`;
+      s += `<text class="docktext" x="${500 + SKY_OUT - 10}" y="${500 + (SKY + SKY_OUT) / 2 + zf * 0.35}" font-size="${zf}" font-weight="700" text-anchor="end">drop it here</text>`;
+    }
     for (const c of circles) s += `<circle class="circle${fuzzy}" cx="${c.x}" cy="${c.y}" r="${c.r}"/>`;
     for (const c of circles) {
       const lp = labelPos(c, c.r);
@@ -254,8 +255,7 @@
       s += `<text class="bigword" x="${Math.min(800, Math.max(200, S.phone.x))}" y="${y}" font-size="${34 * k}" text-anchor="middle">Trilateration!</text>`;
     }
     // satellites (unavailable ones dimmed in the dock)
-    const zf = Math.min(15 * k, 40);
-    s += `<text class="docktext" x="${500 + SKY_OUT - 10}" y="${500 + (SKY + SKY_OUT) / 2 + zf * 0.35}" font-size="${zf}" font-weight="700" text-anchor="end">sky zone</text>`;
+
     S.sats.forEach((x, i) => {
       const avail = i < lv.n;
       s += satSvg(x, k * 1.25, (S.drag === x ? 'dragging' : '') + (avail ? '' : ' locked'));
