@@ -1,0 +1,1289 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tips for Teachers</title>
+<style>
+:root { color-scheme: light; }
+body {
+  margin: 0;
+  background: #f5f5f7;
+  color: #1d1d1f;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+.tips-page {
+  --surface: #fff;
+  --ink: #1d1d1f;
+  --muted: #565960;
+  --accent: #244cda;
+  --soft: #eff2ff;
+  --rule: #e4e5ea;
+  --radius: 1.33rem;
+  box-sizing: border-box;
+  width: min(100% - 4rem, 70rem);
+  margin-inline: auto;
+  padding-block: clamp(2.6rem, 6vw, 5.25rem) 4rem;
+  line-height: 1.5;
+}
+.tips-page *, .tips-page *::before, .tips-page *::after { box-sizing: border-box; }
+.tips-page [hidden] { display: none !important; }
+.tips-page h1, .tips-page h2, .tips-page h3, .tips-page p { margin: 0; }
+.tips-page a { color: var(--accent); text-underline-offset: .17em; }
+.tips-page :focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
+.tips-page .visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  overflow: hidden;
+}
+.tips-page .tips-intro {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1.15rem 2.5rem;
+  margin-block-end: clamp(1.55rem, 3vw, 2.5rem);
+}
+.tips-page h1 {
+  max-inline-size: 16ch;
+  font-size: clamp(2.5rem, 4.75vw, 4.25rem);
+  font-weight: 700;
+  line-height: .99;
+  letter-spacing: -.043em;
+}
+.tips-page #tip-search {
+  display: flex;
+  align-items: center;
+  gap: .85rem;
+  width: min(100%, 23rem);
+  min-block-size: 3.25rem;
+  padding-inline-start: 1.15rem;
+  border: 1px solid #c9cbd3;
+  border-radius: .9rem;
+  background: var(--surface);
+}
+.tips-page #tip-search:focus-within {
+  outline: 3px solid var(--accent);
+  outline-offset: 2px;
+}
+.tips-page .search-icon {
+  position: relative;
+  flex: 0 0 .85rem;
+  block-size: .85rem;
+  border: 1.7px solid var(--muted);
+  border-radius: 50%;
+}
+.tips-page .search-icon::after {
+  position: absolute;
+  inset: auto -.29rem -.18rem auto;
+  content: '';
+  inline-size: .36rem;
+  border-block-start: 1.7px solid var(--muted);
+  transform: rotate(48deg);
+}
+.tips-page input, .tips-page button, .tips-page select { font: inherit; color: inherit; }
+.tips-page #filter {
+  min-inline-size: 0;
+  flex: 1;
+  min-block-size: 3.125rem;
+  padding: .3rem 0;
+  outline: none;
+  border: 0;
+  background: transparent;
+}
+.tips-page #filter::placeholder { color: var(--muted); opacity: 1; }
+.tips-page #filter::-webkit-search-cancel-button { appearance: none; }
+.tips-page #clear {
+  min-inline-size: 2.75rem;
+  min-block-size: 2.75rem;
+  margin-inline-end: .2rem;
+  border: 0;
+  border-radius: .6rem;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+  font-size: 1.4rem;
+}
+.tips-page .tips-layout {
+  display: grid;
+  grid-template-columns: minmax(12.5rem, 15.2rem) minmax(0, 1fr);
+  gap: clamp(1rem, 2.7vw, 2rem);
+  align-items: start;
+}
+.tips-page #topics, .tips-page .tips-reading {
+  border: 1px solid var(--rule);
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+.tips-page #topics {
+  position: sticky;
+  inset-block-start: 1.5rem;
+  padding: 1rem .65rem .65rem;
+}
+.tips-page #topics h2 {
+  padding: .14rem .8rem .6rem;
+  color: var(--muted);
+  font-size: .82rem;
+  font-weight: 650;
+}
+.tips-page #topics ul, .tips-page .tips { list-style: none; padding: 0; margin: 0; }
+.tips-page #topics li + li { margin-block-start: .125rem; }
+.tips-page #topics a {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: .7rem;
+  min-block-size: 2.75rem;
+  padding: .52rem .8rem;
+  border-radius: .64rem;
+  color: var(--ink);
+  font-size: .925rem;
+  font-weight: 550;
+  text-decoration: none;
+  line-height: 1.22;
+}
+.tips-page .arrow::after {
+  content: '';
+  display: block;
+  flex: 0 0 .41rem;
+  inline-size: .41rem;
+  block-size: .41rem;
+  margin-inline-end: .15rem;
+  border-inline-end: 1.6px solid currentColor;
+  border-block-start: 1.6px solid currentColor;
+  transform: rotate(45deg);
+}
+.tips-page #topics a[aria-current] { background: var(--soft); color: var(--accent); font-weight: 670; }
+.tips-page .topic-choice { display: none; }
+.tips-page .tips-reading { min-inline-size: 0; padding: clamp(1.4rem, 3.5vw, 2.9rem); }
+.tips-page .topic, .tips-page .tip { scroll-margin-block-start: 1.5rem; }
+.tips-page .topic > h2, .tips-page #tip-search-heading {
+  margin-block-end: 1.2rem;
+  font-size: clamp(1.9rem, 3.5vw, 3.2rem);
+  font-weight: 680;
+  line-height: 1.05;
+  letter-spacing: -.035em;
+  text-wrap: balance;
+}
+.tips-page .topic:not([hidden]) ~ .topic { margin-block-start: 2.4rem; }
+.tips-page .tip { border-block-start: 1px solid var(--rule); }
+.tips-page .tip:last-child { border-block-end: 1px solid var(--rule); }
+.tips-page .tip h3 { font-size: clamp(1rem, 1.45vw, 1.1rem); font-weight: 630; line-height: 1.32; }
+.tips-page .tip:not(.enhanced) h3 { padding: .85rem .8rem 0; }
+.tips-page .tip button {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: .9rem;
+  width: 100%;
+  min-block-size: 3.25rem;
+  padding: .72rem .8rem;
+  border: 0;
+  border-radius: .5rem;
+  background: transparent;
+  text-align: start;
+  cursor: pointer;
+}
+.tips-page .tip button::after { color: var(--muted); transform: rotate(135deg); }
+.tips-page .tip button[aria-expanded='true']::after { color: var(--accent); transform: rotate(-45deg); }
+.tips-page .tip:has(button[aria-expanded='true']) { background: var(--soft); border-radius: .55rem; border-color: transparent; }
+.tips-page .tip button[aria-expanded='true'] { color: var(--accent); }
+.tips-page .tip-body { max-inline-size: 68ch; padding: .3rem 1.15rem 1rem .8rem; color: var(--muted); overflow-wrap: anywhere; }
+.tips-page .tip-body a { display: inline-block; margin-block-start: .45rem; font-size: .9rem; font-weight: 550; }
+.tips-page .topic-sources {
+  margin-block-start: 1.4rem;
+  color: var(--muted);
+  font-size: .95rem;
+  overflow-wrap: anywhere;
+}
+.tips-page .topic-sources details { border-block-end: 1px solid var(--rule); }
+.tips-page .topic-sources p, .tips-page .topic-sources ul, .tips-page .topic-sources ol { margin-block: .45rem .85rem; }
+.tips-page .topic-sources li + li { margin-block-start: .2rem; }
+.tips-page .topic-sources summary { cursor: pointer; min-block-size: 2.75rem; padding: .58rem 0; color: var(--accent); font-weight: 610; }
+.tips-page .topic-sources > .resource { margin-block-start: .85rem; }
+.tips-page #tip-search-heading { margin-block-end: .42rem; }
+.tips-page #results { color: var(--muted); }
+.tips-page .tip-results .topic { margin-block-start: 1.55rem; }
+.tips-page .tip-results .topic > h2 {
+  font-size: 1rem;
+  letter-spacing: 0;
+  color: var(--muted);
+  margin-block-end: .68rem;
+}
+.tips-page .tip-results .topic-sources { display: none; }
+.tips-page #topics a:active, .tips-page .tip button:active, .tips-page #clear:active { background: #e2e9ff; }
+@media (hover: hover) {
+  .tips-page #topics a:hover, .tips-page .tip button:hover, .tips-page #clear:hover { background: var(--soft); }
+  .tips-page .tip button[aria-expanded='true']:hover { background: #e8edff; }
+}
+@media (min-width: 48.001rem) and (max-width: 66rem) {
+  .tips-page #tip-search { width: min(100%, 20rem); }
+}
+@media (max-width: 48rem) {
+  .tips-page { width: min(100% - 1.5rem, 40rem); padding-block-start: 2.05rem; }
+  .tips-page .tips-intro { margin-inline: .3rem; }
+  .tips-page #tip-search { width: 100%; }
+  .tips-page .tips-layout { display: block; }
+  .tips-page #topics { position: static; margin-block-end: .85rem; }
+  .tips-page #topics.with-picker { display: none; }
+  .tips-page .topic-choice:not([hidden]) {
+    position: relative;
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    align-items: center;
+    gap: .8rem;
+    margin-block-end: .85rem;
+    padding: .25rem .4rem .25rem .9rem;
+    border: 1px solid var(--rule);
+    border-radius: .85rem;
+    background: var(--surface);
+  }
+  .tips-page .topic-choice label { color: var(--muted); font-size: .86rem; }
+  .tips-page .topic-choice select {
+    inline-size: 100%;
+    min-block-size: 2.75rem;
+    padding: .38rem;
+    border: 0;
+    border-radius: .5rem;
+    background: var(--surface);
+    cursor: pointer;
+    color: var(--accent);
+    font-weight: 640;
+  }
+  .tips-page .tips-reading { padding: 1.25rem 1rem; border-radius: 1rem; }
+  .tips-page .tip button { padding-inline: .6rem; }
+  .tips-page .tip-body { padding-inline-start: .6rem; }
+}
+@media (prefers-contrast: more) {
+  .tips-page { --rule: #8c8e96; }
+  .tips-page #topics a[aria-current], .tips-page .tip:has(button[aria-expanded='true']) { box-shadow: inset 0 0 0 2px var(--accent); }
+}
+@media (forced-colors: active) {
+  .tips-page :focus-visible, .tips-page #tip-search:focus-within { outline-color: Highlight; }
+  .tips-page #topics a[aria-current], .tips-page .tip:has(button[aria-expanded='true']) { border: 1px solid Highlight; }
+}
+</style>
+<style id="design-mockup">
+:root { color-scheme: dark; }
+body { background: #000; color: #f5f5f7; font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', 'Segoe UI', sans-serif; -webkit-font-smoothing: antialiased; }
+.tips-page { --surface: #1c1c1e; --ink: #f5f5f7; --muted: #a1a1a6; --accent: #2997ff; --soft: #2c2c2e; --rule: #38383a; --radius: 1.1rem; }
+.tips-page h1 { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Helvetica Neue', sans-serif; font-weight: 700; letter-spacing: -.035em; color: #f5f5f7; }
+.tips-page .topic > h2, .tips-page #tip-search-heading { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Helvetica Neue', sans-serif; letter-spacing: -.03em; color: #f5f5f7; }
+.tips-page #tip-search { background: #1c1c1e; border: 1px solid #3a3a3c; border-radius: .75rem; }
+.tips-page .search-icon, .tips-page .search-icon::after { border-color: var(--muted); }
+.tips-page #topics, .tips-page .tips-reading { background: var(--surface); border: 0; }
+.tips-page #topics { padding: .9rem .55rem .55rem; }
+.tips-page #topics h2 { color: var(--muted); text-transform: uppercase; letter-spacing: .06em; font-size: .74rem; }
+.tips-page #topics a { color: var(--ink); font-weight: 500; }
+.tips-page #topics a.arrow::after { color: #6e6e73; }
+.tips-page #topics a[aria-current] { background: #0071e3; color: #fff; font-weight: 600; }
+.tips-page #topics a[aria-current].arrow::after { color: #fff; }
+.tips-page .tip, .tips-page .tip:last-child { border-color: var(--rule); }
+.tips-page .tip button { color: var(--ink); font-weight: 500; }
+.tips-page .tip button::after { color: #6e6e73; }
+.tips-page .tip:has(button[aria-expanded='true']) { background: var(--soft); border-radius: .75rem; }
+.tips-page .tip button[aria-expanded='true'] { color: #f5f5f7; font-weight: 600; }
+.tips-page .tip button[aria-expanded='true']::after { color: var(--accent); }
+.tips-page .tip-body { color: #d1d1d6; font-size: 1.03rem; line-height: 1.55; }
+.tips-page .tip-body a, .tips-page .topic-sources a, .tips-page .topic-sources summary { color: var(--accent); }
+.tips-page .topic-sources { color: var(--muted); }
+.tips-page .topic-sources details { border-color: var(--rule); }
+.tips-page #clear { color: var(--muted); }
+.tips-page #topics a:active, .tips-page .tip button:active, .tips-page #clear:active { background: #3a3a3c; }
+@media (hover: hover) {
+  .tips-page #topics a:not([aria-current]):hover, .tips-page .tip button:hover, .tips-page #clear:hover { background: #2c2c2e; }
+  .tips-page .tip button[aria-expanded='true']:hover { background: #3a3a3c; }
+}
+@media (max-width: 48rem) {
+  .tips-page .topic-choice:not([hidden]) { background: var(--surface); border-color: #3a3a3c; }
+  .tips-page .topic-choice select { background: var(--surface); color: var(--accent); }
+}
+@media (prefers-contrast: more) { .tips-page { --rule: #8e8e93; --muted: #c7c7cc; } }
+.tips-page #opening, .tips-page #topics a[href="#opening"] { --icon: #ff9f0a; --accent: #ffb340; --tint: color-mix(in srgb, #ff9f0a 16%, #1c1c1e); }
+.tips-page #presenting, .tips-page #topics a[href="#presenting"] { --icon: #0a84ff; --accent: #5eaeff; --tint: color-mix(in srgb, #0a84ff 16%, #1c1c1e); }
+.tips-page #slides, .tips-page #topics a[href="#slides"] { --icon: #bf5af2; --accent: #d48bf7; --tint: color-mix(in srgb, #bf5af2 16%, #1c1c1e); }
+.tips-page #planning, .tips-page #topics a[href="#planning"] { --icon: #30d158; --accent: #4fdc74; --tint: color-mix(in srgb, #30d158 16%, #1c1c1e); }
+.tips-page #questioning, .tips-page #topics a[href="#questioning"] { --icon: #ffd60a; --accent: #ffd60a; --tint: color-mix(in srgb, #ffd60a 16%, #1c1c1e); }
+.tips-page #digital, .tips-page #topics a[href="#digital"] { --icon: #64d2ff; --accent: #7ddaff; --tint: color-mix(in srgb, #64d2ff 16%, #1c1c1e); }
+.tips-page #feedback, .tips-page #topics a[href="#feedback"] { --icon: #ff375f; --accent: #ff7a93; --tint: color-mix(in srgb, #ff375f 16%, #1c1c1e); }
+.tips-page #clinical, .tips-page #topics a[href="#clinical"] { --icon: #7d7aff; --accent: #a3a1ff; --tint: color-mix(in srgb, #7d7aff 16%, #1c1c1e); }
+.tips-page h1 { background: linear-gradient(90deg, #ff9f0a 0%, #ff375f 30%, #bf5af2 60%, #0a84ff 100%); -webkit-background-clip: text; background-clip: text; color: transparent; padding-block-end: .08em; }
+@media (forced-colors: active) { .tips-page h1 { color: CanvasText; background: none; } }
+.tips-page #topics { counter-reset: topic; }
+.tips-page #topics li { counter-increment: topic; }
+.tips-page #topics a { justify-content: flex-start; }
+.tips-page #topics a::before { content: counter(topic); display: grid; place-items: center; flex: 0 0 1.75rem; block-size: 1.75rem; border-radius: .45rem; background: var(--icon); color: #000; font-size: .85rem; font-weight: 700; }
+.tips-page #topics a.arrow::after { margin-inline-start: auto; }
+.tips-page #topics a[aria-current] { background: var(--tint); color: #fff; box-shadow: inset 3px 0 0 var(--icon); }
+.tips-page #topics a[aria-current].arrow::after { color: var(--accent); }
+.tips-page .topic > h2 { color: #f5f5f7; }
+.tips-page .topic > h2::before { content: ''; display: block; inline-size: 2.75rem; block-size: .3rem; margin-block-end: .9rem; border-radius: .3rem; background: var(--icon); }
+.tips-page .tip-results .topic > h2 { color: var(--accent); }
+.tips-page .tip-results .topic > h2::before { display: none; }
+.tips-page .tip:has(button[aria-expanded='true']) { background: var(--tint); box-shadow: inset 3px 0 0 var(--icon); }
+.tips-page .tip button[aria-expanded='true'] { color: var(--accent); }
+.tips-page .tip button[aria-expanded='true']::after { color: var(--accent); }
+.tips-page .tip-body a, .tips-page .topic-sources a, .tips-page .topic-sources summary { color: var(--accent); }
+@media (hover: hover) { .tips-page .tip button[aria-expanded='true']:hover { background: color-mix(in srgb, var(--icon) 10%, transparent); } }
+@media (max-width: 48rem) { .tips-page .topic-choice select { color: #f5f5f7; } }
+</style>
+</head>
+<body>
+<main id="main" class="tips-page" tabindex="-1">
+  <div class="tips-intro">
+    <h1>Tips for Teachers</h1>
+    <form id="tip-search" role="search" aria-label="Teaching tips" hidden>
+      <label for="filter" class="visually-hidden">Search all tips</label>
+      <span class="search-icon" aria-hidden="true"></span>
+      <input type="search" id="filter" placeholder="Search all tips" autocomplete="off">
+      <button type="button" id="clear" aria-label="Clear search" hidden>×</button>
+    </form>
+  </div>
+  <div class="tips-layout">
+    <nav id="topics" tabindex="-1" aria-labelledby="topics-title">
+      <h2 id="topics-title">Topics</h2>
+      <ul role="list">
+      <li><a href="#opening" class="arrow">Open a session</a></li>
+      <li><a href="#presenting" class="arrow">Explain an idea</a></li>
+      <li><a href="#slides" class="arrow">Design slides</a></li>
+      <li><a href="#planning" class="arrow">Plan and practise</a></li>
+      <li><a href="#questioning" class="arrow">Ask questions</a></li>
+      <li><a href="#digital" class="arrow">Use online tools</a></li>
+      <li><a href="#feedback" class="arrow">Give feedback</a></li>
+      <li><a href="#clinical" class="arrow">Guide a small group</a></li>
+      </ul>
+    </nav>
+    <div class="topic-choice" hidden>
+      <label for="topic-picker">Topic</label>
+      <select id="topic-picker">
+        <option value="" disabled>Choose a topic</option>
+      <option value="opening">Open a session</option>
+      <option value="presenting">Explain an idea</option>
+      <option value="slides">Design slides</option>
+      <option value="planning">Plan and practise</option>
+      <option value="questioning">Ask questions</option>
+      <option value="digital">Use online tools</option>
+      <option value="feedback">Give feedback</option>
+      <option value="clinical">Guide a small group</option>
+      </select>
+    </div>
+    <div class="tips-reading">
+      <h2 id="tip-search-heading" hidden>Search results</h2>
+      <p id="results" role="status" aria-atomic="true"></p>
+<section id="opening" class="topic" tabindex="-1" aria-labelledby="opening-title">
+<h2 id="opening-title" tabindex="-1">Open with a reason to listen</h2>
+<ul class="tips" role="list">
+<li class="tip" id="start-with-a-decision">
+  <h3>Start with a decision</h3>
+  <div class="tip-body" id="start-with-a-decision-body">
+    <p>Put a choice on the board before explaining. “Which contains more protein, normal glomerular filtrate or blood plasma? Choose one and tell me why.” Use their reasons to decide how much to recap.</p>
+  </div>
+</li>
+<li class="tip" id="show-where-they-will-use-it">
+  <h3>Show where learners will use it</h3>
+  <div class="tip-body" id="show-where-they-will-use-it-body">
+    <p>Name a task they’ll be able to do. “In your next anatomy revision session, you’ll be able to locate the trachea on an unlabelled chest X-ray.”</p>
+  </div>
+</li>
+<li class="tip" id="give-the-central-message-early">
+  <h3>Give the main idea early</h3>
+  <div class="tip-body" id="give-the-central-message-early-body">
+    <p>State the main idea, then return to it during practice. “Filtration moves fluid and small solutes from blood into the nephron. Reabsorption moves substances from the nephron back towards the blood.” Trace both directions together.</p>
+  </div>
+</li>
+<li class="tip" id="ask-about-their-starting-point">
+  <h3>Find out what learners already know</h3>
+  <div class="tip-body" id="ask-about-their-starting-point-body">
+    <p>Before you teach the nephron, ask “Which parts could you label without notes?” If several learners can only identify the glomerulus, start by tracing the rest of the nephron together.</p>
+  </div>
+</li>
+<li class="tip" id="borrow-from-learners-experiences">
+  <h3>Draw on learners’ experiences</h3>
+  <div class="tip-body" id="borrow-from-learners-experiences-body">
+    <p>Ask peers where they got stuck when first studying Gram staining. If several mention the wash step, ask them to sketch what happens to the stain during that step.</p>
+  </div>
+</li>
+<li class="tip" id="build-a-bridge-from-familiar-material">
+  <h3>Build on a familiar idea</h3>
+  <div class="tip-body" id="build-a-bridge-from-familiar-material-body">
+    <p>Recall something learners know, then pose a bigger question. “You can name the four chambers. Can you trace how blood moves between them?”</p>
+  </div>
+</li>
+<li class="tip" id="ask-a-question-before-teaching-the-answer">
+  <h3>Ask before you explain</h3>
+  <div class="tip-body" id="ask-a-question-before-teaching-the-answer-body">
+    <p>Use an ungraded question before an anatomy tutorial. “Which chamber does blood enter when it returns from the lungs?” Keep answers private or show an anonymous tally. Revisit the question and explain the answer.</p>
+    <a href="https://learninglab.uchicago.edu/Pre-Testing_files/RichlandKornellKao.pdf">Richland and colleagues’ pretesting experiments (PDF)</a>
+  </div>
+</li>
+<li class="tip" id="stop-a-story-at-the-choice">
+  <h3>Pause at the next step</h3>
+  <div class="tip-body" id="stop-a-story-at-the-choice-body">
+    <p>Trace a glucose molecule from the blood into the nephron. Pause at the proximal tubule and ask “Where would the glucose go next?” Take a prediction before adding the next arrow.</p>
+  </div>
+</li>
+<li class="tip" id="choose-examples-learners-can-recognise">
+  <h3>Use familiar situations</h3>
+  <div class="tip-body" id="choose-examples-learners-can-recognise-body">
+    <p>Start your anatomy session with a skeleton model the group has used before. Ask learners to find a familiar landmark before showing the same landmark in a new view.</p>
+  </div>
+</li>
+<li class="tip" id="create-a-curiosity-gap-between-chunks">
+  <h3>Leave a question hanging</h3>
+  <div class="tip-body" id="create-a-curiosity-gap-between-chunks-body">
+    <p>Leave part of the explanation unresolved. “The model shows air going into the lungs. What makes it move in?” Return to the question after the group explores how the diaphragm moves.</p>
+  </div>
+</li>
+<li class="tip" id="give-a-clip-a-job">
+  <h3>Give learners something to watch for</h3>
+  <div class="tip-body" id="give-a-clip-a-job-body">
+    <p>Before a captioned animation on breathing, ask “What does the diaphragm do just before air moves in?” Pause after the movement and collect answers. Share the transcript. For the Mazur interview, ask what made him question his teaching.</p>
+    <a href="https://www.gse.harvard.edu/ideas/news/14/11/master-class-eric-mazur">Harvard’s master class with Eric Mazur (video)</a>
+  </div>
+</li>
+</ul>
+<div class="topic-sources">
+<details>
+<summary>Presenter advice from Chip and Dan Heath</summary>
+<p>The Heaths propose six traits for a memorable message. These examples apply them to a peer tutorial on the nephron.</p>
+<ul>
+<li><strong>Simple.</strong> Focus on the direction of filtration and reabsorption.</li>
+<li><strong>Unexpected.</strong> Ask why glucose enters the filtrate if most of it returns to the blood.</li>
+<li><strong>Concrete.</strong> Trace one glucose molecule on the diagram.</li>
+<li><strong>Credible.</strong> Use the labels learners can check in their course physiology notes.</li>
+<li><strong>Emotional.</strong> Ask learners which step they struggled with and work through it together.</li>
+<li><strong>Stories.</strong> Follow glucose from the blood into the filtrate and back towards the blood.</li>
+</ul>
+<p><a href="https://heathbrothers.com/wp-content/uploads/resources/mts-made-to-stick-model.pdf">Chip and Dan Heath’s <cite>Made to Stick</cite> model (PDF)</a></p>
+</details>
+<p class="resource">Youki Terada summarises research and classroom practice on introducing, pausing and checking a short explanation. <a href="https://www.edutopia.org/article/8-evidence-based-tips-make-your-lectures-more-engaging-and-memorable/">Eight tips for engaging lectures from Edutopia</a></p>
+</div>
+</section>
+<section id="presenting" class="topic" tabindex="-1" aria-labelledby="presenting-title">
+<h2 id="presenting-title" tabindex="-1">Explain so learners can follow</h2>
+<ul class="tips" role="list">
+<li class="tip" id="give-the-explanation-a-clear-shape">
+  <h3>Set out the order</h3>
+  <div class="tip-body" id="give-the-explanation-a-clear-shape-body">
+    <p>Choose a sequence that fits the idea. “First we’ll name the chambers, then trace blood flow, then explain the route to a partner using the unlabelled diagram.”</p>
+  </div>
+</li>
+<li class="tip" id="practise-your-first-line-aloud">
+  <h3>Practise your first line</h3>
+  <div class="tip-body" id="practise-your-first-line-aloud-body">
+    <p>Rehearse an opening you can use while the screen loads. “Two drugs can produce the same maximum response. What else might differ between them?” Take a few answers before showing both curves.</p>
+  </div>
+</li>
+<li class="tip" id="practise-with-a-clock">
+  <h3>Time a rehearsal</h3>
+  <div class="tip-body" id="practise-with-a-clock-body">
+    <p>Record one run and note where you rush. Include the closing question and trim an example if needed.</p>
+  </div>
+</li>
+<li class="tip" id="face-your-learners">
+  <h3>Face your learners</h3>
+  <div class="tip-body" id="face-your-learners-body">
+    <p>Glance at your main point in the notes, then look around the room. Online, switch from screen sharing to the group when you ask for reactions.</p>
+  </div>
+</li>
+<li class="tip" id="use-a-pause-to-separate-ideas">
+  <h3>Pause between ideas</h3>
+  <div class="tip-body" id="use-a-pause-to-separate-ideas-body">
+    <p>“We’ve followed the air into the lungs.” Pause and let learners find the air sacs on the diagram. “Now let’s see where oxygen goes next.”</p>
+  </div>
+</li>
+<li class="tip" id="vary-the-emphasis">
+  <h3>Stress the word that matters</h3>
+  <div class="tip-body" id="vary-the-emphasis-body">
+    <p>In a renal tutorial, stress the direction. “Reabsorption moves glucose <em>back towards the blood</em>.” Trace the arrow while you say it.</p>
+  </div>
+</li>
+<li class="tip" id="choose-where-to-move">
+  <h3>Move to direct attention</h3>
+  <div class="tip-body" id="choose-where-to-move-body">
+    <p>Point to the landmark on the skeleton model, name it aloud, then step aside so everyone can see it.</p>
+  </div>
+</li>
+<li class="tip" id="speak-in-ordinary-words-first">
+  <h3>Start with everyday words</h3>
+  <div class="tip-body" id="speak-in-ordinary-words-first-body">
+    <p>Say “the amount of blood the heart pumps in one minute” before introducing “cardiac output”. Define abbreviations as learners need them.</p>
+  </div>
+</li>
+<li class="tip" id="talk-through-the-decision">
+  <h3>Explain why you chose each step</h3>
+  <div class="tip-body" id="talk-through-the-decision-body">
+    <p>Show the action and explain your decision. “I’ll orientate the anatomy model first so you can tell which side we’re looking at.”</p>
+  </div>
+</li>
+<li class="tip" id="offer-a-concrete-contrast">
+  <h3>Compare two easily confused ideas</h3>
+  <div class="tip-body" id="offer-a-concrete-contrast-body">
+    <p>Compare ventilation, the movement of air into and out of the lungs, with gas exchange. Ask learners to show where each happens on a diagram.</p>
+  </div>
+</li>
+<li class="tip" id="use-an-analogy-and-name-its-limit">
+  <h3>Name the limit of an analogy</h3>
+  <div class="tip-body" id="use-an-analogy-and-name-its-limit-body">
+    <p>Compare a heart valve to a one-way door. The analogy shows direction. Extend the explanation with a diagram showing how a pressure difference opens or closes the valve.</p>
+  </div>
+</li>
+<li class="tip" id="signpost-a-change-of-activity">
+  <h3>Signal a change of activity</h3>
+  <div class="tip-body" id="signpost-a-change-of-activity-body">
+    <p>Say what to stop and what to start. “Put the notes aside. Now point out the kneecap to your partner on the model.”</p>
+  </div>
+</li>
+<li class="tip" id="make-uncertainty-visible">
+  <h3>Check what you’re unsure about</h3>
+  <div class="tip-body" id="make-uncertainty-visible-body">
+    <p>If asked about a detail in an anatomy image you can’t verify, say “I’ll check the course atlas and add the answer to our session page.” Follow up after checking.</p>
+  </div>
+</li>
+<li class="tip" id="finish-with-one-line-learners-can-reuse">
+  <h3>End with a line learners can reuse</h3>
+  <div class="tip-body" id="finish-with-one-line-learners-can-reuse-body">
+    <p>“To orientate an anatomy model, start with a landmark you recognise.”</p>
+  </div>
+</li>
+</ul>
+<div class="topic-sources">
+<details>
+<summary>Presenter advice from Carmine Gallo</summary>
+<p>Gallo’s <cite>Talk Like TED</cite> recommends conveying enthusiasm, telling stories, giving the audience something new and keeping the talk concise. For a peer session, choose a story or contrast that explains why you care about the topic, then practise it aloud within the time you have.</p>
+<p><a href="https://us.macmillan.com/books/9781427236203/talkliketed/">Carmine Gallo’s <cite>Talk Like TED</cite></a></p>
+</details>
+<p class="resource">Jennifer Gonzalez collects teachers’ suggestions on structuring explanations, using examples and analogies, and starting with a problem. <a href="https://www.cultofpedagogy.com/better-lecture/">Ten ways to give a better lecture from Cult of Pedagogy</a></p>
+</div>
+</section>
+<section id="slides" class="topic" tabindex="-1" aria-labelledby="slides-title">
+<h2 id="slides-title" tabindex="-1">Make slides easy to read</h2>
+<ul class="tips" role="list">
+<li class="tip" id="strip-out-distractions">
+  <h3>Remove distractions</h3>
+  <div class="tip-body" id="strip-out-distractions-body">
+    <p>Take out a decorative image or long heading. Show a peer both versions and ask where they look first.</p>
+  </div>
+</li>
+<li class="tip" id="write-the-message-as-the-title">
+  <h3>Put the message in the title</h3>
+  <div class="tip-body" id="write-the-message-as-the-title-body">
+    <p>Title a renal diagram “Reabsorption moves substances back towards the blood” so learners know which direction to look for.</p>
+  </div>
+</li>
+<li class="tip" id="use-one-main-idea-per-slide">
+  <h3>Use one main idea per slide</h3>
+  <div class="tip-body" id="use-one-main-idea-per-slide-body">
+    <p>Put two views of the same knee side by side when the task is to recognise one landmark. Give the other landmarks their own slide or put them in the online reference.</p>
+  </div>
+</li>
+<li class="tip" id="point-out-what-matters">
+  <h3>Point out what matters</h3>
+  <div class="tip-body" id="point-out-what-matters-body">
+    <p>Add a label or arrow that works without colour, and describe it aloud. “The arrow points to the kneecap at the front of the joint.”</p>
+  </div>
+</li>
+<li class="tip" id="put-labels-next-to-the-visual">
+  <h3>Put labels beside the visual</h3>
+  <div class="tip-body" id="put-labels-next-to-the-visual-body">
+    <p>Put each label beside the structure it identifies on an anatomy diagram. Use short leader lines if the labels would otherwise overlap.</p>
+  </div>
+</li>
+<li class="tip" id="reveal-a-visual-in-step-with-the-explanation">
+  <h3>Reveal visuals as you explain them</h3>
+  <div class="tip-body" id="reveal-a-visual-in-step-with-the-explanation-body">
+    <p>Reveal each part of the blood flow route as you explain it. In the deck you share, include a final view with the full route visible.</p>
+  </div>
+</li>
+<li class="tip" id="use-a-visual-when-it-shows-the-idea-better">
+  <h3>Use a visual when it helps</h3>
+  <div class="tip-body" id="use-a-visual-when-it-shows-the-idea-better-body">
+    <p>Use a labelled diagram to show where structures sit in relation to each other. Use text for definitions, instructions and exact wording.</p>
+  </div>
+</li>
+<li class="tip" id="edit-the-narration-and-on-screen-text-together">
+  <h3>Coordinate narration and slide text</h3>
+  <div class="tip-body" id="edit-the-narration-and-on-screen-text-together-body">
+    <p>Explain the diagram while learners see it with short labels. Keep captions and essential written instructions available.</p>
+  </div>
+</li>
+<li class="tip" id="make-graphs-readable-from-the-back">
+  <h3>Make graphs readable from the back</h3>
+  <div class="tip-body" id="make-graphs-readable-from-the-back-body">
+    <p>On a pharmacology concentration–response chart, label drug concentration and response with their units. Read the labels aloud and check that learners can make them out in the room or on a phone.</p>
+  </div>
+</li>
+<li class="tip" id="give-learners-an-accessible-equivalent">
+  <h3>Provide an accessible equivalent</h3>
+  <div class="tip-body" id="give-learners-an-accessible-equivalent-body">
+    <p>Describe the route shown on an anatomy diagram in text. For a concentration–response chart, share a readable table and a short description of what the curves show. Caption any clips.</p>
+  </div>
+</li>
+<li class="tip" id="freeze-a-slide-for-the-practice-question">
+  <h3>Keep the practice question visible</h3>
+  <div class="tip-body" id="freeze-a-slide-for-the-practice-question-body">
+    <p>Keep only what learners need on screen. Put “Which arrow shows reabsorption?” beside the nephron diagram and leave both visible while pairs discuss.</p>
+  </div>
+</li>
+</ul>
+<div class="topic-sources">
+<details>
+<summary>Research principles from Richard Mayer</summary>
+<p>Mayer and colleagues tested ways to teach with words and visuals under specific conditions. Keep captions and other access formats available.</p>
+<ul>
+<li><strong>Coherence.</strong> Remove material that competes with the idea.</li>
+<li><strong>Signalling.</strong> Mark the structure or the feature to attend to.</li>
+<li><strong>Redundancy.</strong> Where suitable, avoid routinely adding a verbatim narration transcript next to a narrated graphic.</li>
+<li><strong>Spatial contiguity.</strong> Keep a visual and its label close together.</li>
+<li><strong>Temporal contiguity.</strong> Align a visual and the related explanation in time.</li>
+<li><strong>Segmenting.</strong> Break a longer explanation into parts learners can work through at a manageable pace.</li>
+<li><strong>Pre-training.</strong> Introduce essential terms or components before a complex explanation.</li>
+<li><strong>Multimedia.</strong> Use words and a relevant graphic when the graphic helps explain the idea.</li>
+</ul>
+<p><a href="https://onlinelibrary.wiley.com/doi/10.1111/jcal.12197">Richard Mayer’s overview of multimedia learning principles</a></p>
+</details>
+</div>
+</section>
+<section id="planning" class="topic" tabindex="-1" aria-labelledby="planning-title">
+<h2 id="planning-title" tabindex="-1">Plan for practice</h2>
+<ul class="tips" role="list">
+<li class="tip" id="choose-one-thing-learners-can-do">
+  <h3>Set one objective you can check</h3>
+  <div class="tip-body" id="choose-one-thing-learners-can-do-body">
+    <p>Try “By the end, label the trachea on an anatomy image” or “Explain the difference between necrosis and apoptosis on a cell diagram”. Give learners a fresh image or diagram to check the same action.</p>
+  </div>
+</li>
+<li class="tip" id="choose-your-ending-before-building-slides">
+  <h3>Plan the final check first</h3>
+  <div class="tip-body" id="choose-your-ending-before-building-slides-body">
+    <p>Before building slides, choose a fresh task. If learners practise identifying a knee landmark, finish with a different image that shows the same landmark clearly.</p>
+  </div>
+</li>
+<li class="tip" id="use-a-ten-minute-sketch">
+  <h3>Sketch a ten-minute plan</h3>
+  <div class="tip-body" id="use-a-ten-minute-sketch-body">
+    <p>Try one minute for the problem, two to explain or show, four to practise, two to discuss and one to check. Adapt the timings and keep the check.</p>
+  </div>
+</li>
+<li class="tip" id="pick-what-to-leave-out">
+  <h3>Choose what to leave out</h3>
+  <div class="tip-body" id="pick-what-to-leave-out-body">
+    <p>In a renal tutorial, focus on the direction of filtration and reabsorption. Link to the course diagram and leave the transport proteins for a later session.</p>
+  </div>
+</li>
+<li class="tip" id="send-short-pre-work-with-a-purpose">
+  <h3>Give pre-work a purpose</h3>
+  <div class="tip-body" id="send-short-pre-work-with-a-purpose-body">
+    <p>Pair a short reading, diagram or captioned clip with a question. “Look at the diagram of the hand and choose two bones you would use as landmarks. Be ready to point them out.”</p>
+  </div>
+</li>
+<li class="tip" id="plan-for-uneven-preparation">
+  <h3>Plan for uneven preparation</h3>
+  <div class="tip-body" id="plan-for-uneven-preparation-body">
+    <p>Check that everyone can find the alveolus and capillary on the diagram. Label them together if needed. Then ask pairs to add arrows showing where oxygen and carbon dioxide move.</p>
+  </div>
+</li>
+<li class="tip" id="review-a-prerequisite-from-memory">
+  <h3>Recall a prerequisite</h3>
+  <div class="tip-body" id="review-a-prerequisite-from-memory-body">
+    <p>Ask learners to recall an idea before they use it. “Before we discuss ventilation, sketch where the diaphragm sits relative to the lungs.”</p>
+  </div>
+</li>
+<li class="tip" id="break-at-meaningful-boundaries">
+  <h3>Break explanations into steps</h3>
+  <div class="tip-body" id="break-at-meaningful-boundaries-body">
+    <p>Teach one part, then practise it. Ask learners to trace blood flow from the heart to the lungs before adding the route back to the heart.</p>
+  </div>
+</li>
+<li class="tip" id="show-a-worked-example">
+  <h3>Show a worked example</h3>
+  <div class="tip-body" id="show-a-worked-example-body">
+    <p>Think aloud as you label a Gram-positive cell wall diagram. In a second, partly labelled diagram, ask learners to add one missing feature and explain their choice.</p>
+  </div>
+</li>
+<li class="tip" id="remove-prompts-as-learners-improve">
+  <h3>Remove prompts as learners improve</h3>
+  <div class="tip-body" id="remove-prompts-as-learners-improve-body">
+    <p>Offer labelled arrows for the first nephron diagram. When learners can explain what each arrow shows, give them a blank diagram and ask them to add the arrows themselves.</p>
+  </div>
+</li>
+<li class="tip" id="pick-formats-for-the-task">
+  <h3>Choose formats for the task</h3>
+  <div class="tip-body" id="pick-formats-for-the-task-body">
+    <p>Use a diagram to show where structures sit. Explain a mechanism aloud and ask learners to sketch the steps. Learners may have preferences, but evidence does not support matching teaching to named learning styles.</p>
+    <a href="https://pubmed.ncbi.nlm.nih.gov/26162104/">Pashler and colleagues on learning styles</a>
+  </div>
+</li>
+<li class="tip" id="ask-learners-to-think-about-the-idea-you-want-them-to-remember">
+  <h3>Practise the reasoning you want learners to remember</h3>
+  <div class="tip-body" id="ask-learners-to-think-about-the-idea-you-want-them-to-remember-body">
+    <p>In a physiology tutorial, ask learners to explain why two people with the same heart rate could have different cardiac outputs. Have them use the volume of blood pumped with each beat in their explanation.</p>
+    <a href="https://www.aft.org/ae/fall2015/willingham">Daniel Willingham on when students remember what they learn</a>
+  </div>
+</li>
+<li class="tip" id="ask-for-a-blank-screen-recall">
+  <h3>Try blank-screen recall</h3>
+  <div class="tip-body" id="ask-for-a-blank-screen-recall-body">
+    <p>Hide the diagram while learners sketch where the diaphragm sits relative to the lungs. Reveal it and have them compare their sketches with it and correct one detail.</p>
+  </div>
+</li>
+<li class="tip" id="space-the-next-attempt">
+  <h3>Space the next attempt</h3>
+  <div class="tip-body" id="space-the-next-attempt-body">
+    <p>Post an unlabelled heart diagram the following week and ask learners to trace blood flow. Return to the route when the group studies how oxygen reaches the tissues.</p>
+  </div>
+</li>
+<li class="tip" id="model-a-technique-then-name-it">
+  <h3>Model a technique before naming it</h3>
+  <div class="tip-body" id="model-a-technique-then-name-it-body">
+    <p>Ask learners to decide which graph shows a drug with the greater maximum effect. Give private thinking time, invite pairs to compare, then hear their reasons. Name think–pair–share after using it.</p>
+  </div>
+</li>
+</ul>
+<div class="topic-sources">
+<details>
+<summary>Rosenshine’s ten research-informed principles</summary>
+<p>Rosenshine drew these principles from several research traditions. The principles follow his article’s order. We’ve added examples for medical peer teaching.</p>
+<ol>
+<li><strong>Review earlier learning at the start.</strong> Name the heart chambers before tracing blood flow.</li>
+<li><strong>Introduce small amounts at a time and practise after each step.</strong> Trace the route to the lungs before adding the route back.</li>
+<li><strong>Ask many questions and gather answers from everyone.</strong> Ask for an individual choice before discussion.</li>
+<li><strong>Show models of successful work.</strong> Draw and explain both arrows on a nephron diagram.</li>
+<li><strong>Support learners during their first practice.</strong> Listen to a pair’s explanation and prompt the missing step.</li>
+<li><strong>Check what learners understand.</strong> Ask them to show how they reached an answer.</li>
+<li><strong>Set practice that most learners can manage successfully.</strong> Simplify the first attempt if errors are widespread.</li>
+<li><strong>Give temporary support for difficult tasks.</strong> Offer a sentence starter and remove it as learners gain independence.</li>
+<li><strong>Assign and monitor independent practice.</strong> Ask everyone to label a new diagram and review their answers.</li>
+<li><strong>Plan weekly and monthly reviews.</strong> Include the idea again in later sessions.</li>
+</ol>
+<p><a href="https://www.aft.org/ae/spring2012/rosenshine">Barak Rosenshine’s <cite>Principles of Instruction</cite></a></p>
+</details>
+<details>
+<summary>Research on retrieval and spacing</summary>
+<p>Retrieval practice means recalling what you learned before you check it. Spacing means returning to the material after a delay. An immediate quiz can guide teaching. A later independent check helps you see what learners retained.</p>
+<p><a href="https://pubmed.ncbi.nlm.nih.gov/16507066/">Roediger and Karpicke’s retrieval experiment</a> · <a href="https://pubmed.ncbi.nlm.nih.gov/21574747/">Karpicke and Bauernschmidt’s spaced retrieval experiment</a></p>
+</details>
+</div>
+</section>
+<section id="questioning" class="topic" tabindex="-1" aria-labelledby="questioning-title">
+<h2 id="questioning-title" tabindex="-1">Ask questions that check understanding</h2>
+<ul class="tips" role="list">
+<li class="tip" id="turn-does-that-make-sense-into-a-task">
+  <h3>Turn “Does that make sense?” into a task</h3>
+  <div class="tip-body" id="turn-does-that-make-sense-into-a-task-body">
+    <p>Ask learners to choose, explain, draw or demonstrate. “On the two knee views, point to the same bony landmark and explain how you recognised it.”</p>
+  </div>
+</li>
+<li class="tip" id="ask-for-a-distinction">
+  <h3>Ask learners to compare two examples</h3>
+  <div class="tip-body" id="ask-for-a-distinction-body">
+    <p>Put two cell diagrams side by side. Ask “Which shows apoptosis and which shows necrosis? Which feature helped you decide?” Listen for explanations tied to the diagrams.</p>
+  </div>
+</li>
+<li class="tip" id="give-everyone-thinking-time">
+  <h3>Give everyone thinking time</h3>
+  <div class="tip-body" id="give-everyone-thinking-time-body">
+    <p>Say “Take a few seconds to decide. I’ll ask for reasons after you’ve thought.” Leave time for people to start.</p>
+  </div>
+</li>
+<li class="tip" id="use-think-pair-share">
+  <h3>Use think–pair–share</h3>
+  <div class="tip-body" id="use-think-pair-share-body">
+    <p>Ask each learner to choose which arrow on a nephron diagram shows secretion. Have pairs compare their reasons and agree on one to share. Keep the diagram and prompt visible.</p>
+  </div>
+</li>
+<li class="tip" id="invite-voices-beyond-volunteers">
+  <h3>Invite people beyond the volunteers</h3>
+  <div class="tip-body" id="invite-voices-beyond-volunteers-body">
+    <p>Explain how you’ll invite responses after preparation. Ask consenting pairs, share anonymous written answers or offer “pass or come back”.</p>
+  </div>
+</li>
+<li class="tip" id="use-a-simultaneous-response">
+  <h3>Collect answers at the same time</h3>
+  <div class="tip-body" id="use-a-simultaneous-response-body">
+    <p>Use individual poll votes, chat replies sent on cue or one post per learner on a board. Reveal the distribution after learners respond.</p>
+  </div>
+</li>
+<li class="tip" id="write-a-hinge-question">
+  <h3>Write a hinge question</h3>
+  <div class="tip-body" id="write-a-hinge-question-body">
+    <p>Before moving on, ask a question that helps you decide what to reteach. “For air to move into the lungs, must the pressure inside them be lower than, equal to, or higher than outside?”</p>
+  </div>
+</li>
+<li class="tip" id="plan-what-to-do-with-the-answers">
+  <h3>Plan how to use the answers</h3>
+  <div class="tip-body" id="plan-what-to-do-with-the-answers-body">
+    <p>If several learners say pressure rises before air moves in, revisit how the chest expands. If the group is split, let pairs compare their reasoning. If most are right, ask someone to explain before moving on.</p>
+  </div>
+</li>
+<li class="tip" id="try-mazur-s-vote-discuss-and-vote-again">
+  <h3>Try Mazur’s vote, discuss and vote again</h3>
+  <div class="tip-body" id="try-mazur-s-vote-discuss-and-vote-again-body">
+    <p>Ask whether two people with the same heart rate must have the same cardiac output. Collect solo votes, have peers with different answers compare their reasoning, then vote again and explain the answer.</p>
+  </div>
+</li>
+<li class="tip" id="probe-a-right-answer">
+  <h3>Probe a right answer</h3>
+  <div class="tip-body" id="probe-a-right-answer-body">
+    <p>If someone correctly points to the outer membrane, ask “What feature on the diagram tells you that’s the outer membrane?” Listen for evidence they could apply to another diagram.</p>
+  </div>
+</li>
+<li class="tip" id="respond-well-to-a-mistake">
+  <h3>Use a mistake to guide practice</h3>
+  <div class="tip-body" id="respond-well-to-a-mistake-body">
+    <p>If learners reverse an arrow on the heart diagram, say “Let’s find where the blood enters this chamber, then trace where it goes next.” Have them try again on an unlabelled diagram.</p>
+  </div>
+</li>
+<li class="tip" id="give-a-quiet-group-a-way-to-start">
+  <h3>Help a quiet group get started</h3>
+  <div class="tip-body" id="give-a-quiet-group-a-way-to-start-body">
+    <p>If “How does the diaphragm affect pressure?” gets silence, start with “Does the diaphragm move up or down when you breathe in?” Give everyone thinking time before asking pairs to explain.</p>
+  </div>
+</li>
+<li class="tip" id="check-a-new-example-after-discussion">
+  <h3>Check learning on a fresh example</h3>
+  <div class="tip-body" id="check-a-new-example-after-discussion-body">
+    <p>A second vote shows how answers changed. Then ask “If heart rate rises and the volume pumped per beat falls, can you tell what happens to cardiac output?” Ask each learner to explain independently.</p>
+  </div>
+</li>
+</ul>
+<div class="topic-sources">
+<details>
+<summary>Black and Wiliam’s formative assessment framework</summary>
+<p>Assessment is formative when the teacher or learner uses the evidence to decide what to do next. Say what success looks like, ask learners to show what they know, give feedback they can use and help peers check their own and each other’s work.</p>
+<p><a href="https://kclpure.kcl.ac.uk/portal/en/publications/developing-the-theory-of-formative-assessment/">Paul Black and Dylan Wiliam’s <cite>Developing the theory of formative assessment</cite></a> · <a href="https://www.youtube.com/watch?v=zZL6Zf5lMVw">Dylan Wiliam’s introduction to formative assessment (video)</a></p>
+</details>
+<details>
+<summary>Crouch and Mazur’s Peer Instruction</summary>
+<p>Crouch and Mazur report on Peer Instruction in introductory physics. A solo vote, a peer discussion and a second vote show how thinking changes. In medical revision, use a question worth debating and check learners’ explanations.</p>
+<p><a href="https://mazur.harvard.edu/publications/peer-instruction-ten-years-experience-and-results">Catherine Crouch and Eric Mazur’s report on Peer Instruction</a></p>
+</details>
+</div>
+</section>
+<section id="digital" class="topic" tabindex="-1" aria-labelledby="digital-title">
+<h2 id="digital-title" tabindex="-1">Choose online tools for the task</h2>
+<ul class="tips" role="list">
+<li class="tip" id="build-an-interactive-handout-as-a-reference">
+  <h3>Build an interactive reference</h3>
+  <div class="tip-body" id="build-an-interactive-handout-as-a-reference-body">
+    <p>Let learners open the level of detail they need. For each nephron segment, show the position on a reference diagram and let learners expand a short note on what happens there.</p>
+  </div>
+</li>
+<li class="tip" id="build-an-interactive-worksheet-as-practice">
+  <h3>Build an interactive practice worksheet</h3>
+  <div class="tip-body" id="build-an-interactive-worksheet-as-practice-body">
+    <p>Ask learners to identify a landmark on an anatomy image. Explain what helps you recognise it, then offer another try with an image from a different angle.</p>
+  </div>
+</li>
+<li class="tip" id="choose-the-simplest-way-to-get-the-evidence">
+  <h3>Choose a tool for the response you need</h3>
+  <div class="tip-body" id="choose-the-simplest-way-to-get-the-evidence-body">
+    <p>Use a poll if you need everyone’s choice of arrow, chat if you want a sentence from each learner and a shared board if pairs will draw on a diagram. Ask aloud if you only need one or two responses.</p>
+  </div>
+</li>
+<li class="tip" id="share-a-short-explanation-learners-can-replay">
+  <h3>Share an explanation learners can replay</h3>
+  <div class="tip-body" id="share-a-short-explanation-learners-can-replay-body">
+    <p>Record a short walkthrough of a renal diagram. Add captions, a transcript and a prompt to pause and trace reabsorption before you add the arrow.</p>
+  </div>
+</li>
+<li class="tip" id="test-from-the-student-side">
+  <h3>Test as a learner</h3>
+  <div class="tip-body" id="test-from-the-student-side-body">
+    <p>Open the link in a private window or on another device with learner permissions. Submit an answer and check what the tutor sees.</p>
+  </div>
+</li>
+<li class="tip" id="offer-more-than-one-way-in">
+  <h3>Offer more than one way to open a resource</h3>
+  <div class="tip-body" id="offer-more-than-one-way-in-body">
+    <p>Post a descriptive link in chat and show an address learners can type from the slide. Offer a QR code too.</p>
+  </div>
+</li>
+<li class="tip" id="make-controls-work-on-small-screens-and-with-tab">
+  <h3>Test on a phone and with Tab</h3>
+  <div class="tip-body" id="make-controls-work-on-small-screens-and-with-tab-body">
+    <p>Check text at phone width and make sure buttons show focus and can be used with a keyboard. Make answers available without hovering.</p>
+  </div>
+</li>
+<li class="tip" id="set-up-a-board-with-defined-spaces">
+  <h3>Give pairs space on a shared board</h3>
+  <div class="tip-body" id="set-up-a-board-with-defined-spaces-body">
+    <p>Give each pair a row to explain one difference between Gram-positive and Gram-negative cell envelopes. Read two answers aloud and ask learners to point to both features on the diagrams.</p>
+  </div>
+</li>
+<li class="tip" id="use-a-digital-parking-lot">
+  <h3>Save questions to revisit</h3>
+  <div class="tip-body" id="use-a-digital-parking-lot-body">
+    <p>Set a digital space for questions that can wait. At the end, answer them, share a source or say where you’ll post a checked answer.</p>
+  </div>
+</li>
+<li class="tip" id="let-pairs-try-both-sides-of-a-tool">
+  <h3>Try both sides of the tool</h3>
+  <div class="tip-body" id="let-pairs-try-both-sides-of-a-tool-body">
+    <p>Have one peer set a question and the other answer. Check when answers appear and what the tutor can learn from them. Then swap.</p>
+  </div>
+</li>
+<li class="tip" id="design-games-around-the-thinking">
+  <h3>Design a game around the thinking</h3>
+  <div class="tip-body" id="design-games-around-the-thinking-body">
+    <p>Ask pairs to match the bones of the hand to their labels for recall. Then show the same bones in a different view and ask which clues helped them recognise each one.</p>
+  </div>
+</li>
+<li class="tip" id="debrief-the-game">
+  <h3>Debrief the game</h3>
+  <div class="tip-body" id="debrief-the-game-body">
+    <p>Explain why each answer fits and set a fresh item. Give learners time and make speed optional when you want them to reason.</p>
+  </div>
+</li>
+<li class="tip" id="prepare-a-fallback-in-the-same-meeting-space">
+  <h3>Have a fallback in the same meeting</h3>
+  <div class="tip-body" id="prepare-a-fallback-in-the-same-meeting-space-body">
+    <p>If the board fails, paste the prompt into chat. Ask pairs to write one idea and send it on your cue.</p>
+  </div>
+</li>
+<li class="tip" id="use-fictional-material-in-shared-tools">
+  <h3>Use materials you can share online</h3>
+  <div class="tip-body" id="use-fictional-material-in-shared-tools-body">
+    <p>Choose a course diagram you have permission to share or draw your own schematic. Check who can open the activity and who can see answers before you send the link.</p>
+  </div>
+</li>
+</ul>
+</section>
+<section id="feedback" class="topic" tabindex="-1" aria-labelledby="feedback-title">
+<h2 id="feedback-title" tabindex="-1">Give feedback learners can use</h2>
+<ul class="tips" role="list">
+<li class="tip" id="name-the-target-before-the-attempt">
+  <h3>Set the target before practice</h3>
+  <div class="tip-body" id="name-the-target-before-the-attempt-body">
+    <p>Before learners explain gas exchange to a partner, say “Use the diagram to show where oxygen goes and what makes it move.” Give feedback on those two parts.</p>
+  </div>
+</li>
+<li class="tip" id="agree-what-the-learner-wants-help-with">
+  <h3>Ask what the learner wants help with</h3>
+  <div class="tip-body" id="agree-what-the-learner-wants-help-with-body">
+    <p>Before a peer explains how the diaphragm works, ask “What would you like me to listen for?” If they want help with pace, note whether they pause between the change in pressure and the movement of air.</p>
+  </div>
+</li>
+<li class="tip" id="describe-a-specific-moment">
+  <h3>Describe a specific moment</h3>
+  <div class="tip-body" id="describe-a-specific-moment-body">
+    <p>Point to the sentence, slide or action that caused difficulty. “When you turned the knee model around, I lost track of which side we were looking at.”</p>
+  </div>
+</li>
+<li class="tip" id="suggest-one-achievable-change">
+  <h3>Suggest one change to try now</h3>
+  <div class="tip-body" id="suggest-one-achievable-change-body">
+    <p>“After you turn the knee model, point out the kneecap again before you name the next structure.”</p>
+  </div>
+</li>
+<li class="tip" id="keep-the-score-from-crowding-out-the-advice">
+  <h3>Give feedback room alongside scores</h3>
+  <div class="tip-body" id="keep-the-score-from-crowding-out-the-advice-body">
+    <p>In low-stakes practice, give a specific comment first and ask learners to use it. If you must score the attempt, reserve time to act on the feedback.</p>
+  </div>
+</li>
+<li class="tip" id="ask-for-self-assessment-first">
+  <h3>Ask for self-assessment first</h3>
+  <div class="tip-body" id="ask-for-self-assessment-first-body">
+    <p>After a peer explains how an antagonist affects a receptor, ask “Which part of that explanation felt clearest? Where would a diagram help?” Compare their answer with what you heard.</p>
+  </div>
+</li>
+<li class="tip" id="repeat-the-relevant-part-now">
+  <h3>Repeat the part you changed</h3>
+  <div class="tip-body" id="repeat-the-relevant-part-now-body">
+    <p>Repeat just the part you changed. After pointing out the kneecap again, ask your partner to tell you how the model is now oriented.</p>
+  </div>
+</li>
+<li class="tip" id="give-learners-something-useful-to-keep">
+  <h3>Say what to keep</h3>
+  <div class="tip-body" id="give-learners-something-useful-to-keep-body">
+    <p>Name what helped. “When you followed the oxygen arrow from the air sac into the blood as you spoke, I could follow the direction. Keep pointing as you explain.”</p>
+  </div>
+</li>
+<li class="tip" id="use-a-short-online-exit-ticket">
+  <h3>Use a short online exit ticket</h3>
+  <div class="tip-body" id="use-a-short-online-exit-ticket-body">
+    <p>At the end of a renal tutorial, ask “Which arrow can you now explain? Which step still needs a second look?” Use their replies to choose what to recap next time.</p>
+  </div>
+</li>
+<li class="tip" id="finish-the-opening-quiz-and-debrief">
+  <h3>Revisit the opening quiz</h3>
+  <div class="tip-body" id="finish-the-opening-quiz-and-debrief-body">
+    <p>Revisit the question about which chamber receives blood from the lungs. Ask learners to show how they know. Use their explanations to plan a later question.</p>
+  </div>
+</li>
+<li class="tip" id="ask-a-peer-to-help-redesign-a-session">
+  <h3>Redesign a session with a peer</h3>
+  <div class="tip-body" id="ask-a-peer-to-help-redesign-a-session-body">
+    <p>Choose a topic that feels like a list, such as the bones of the hand. Spend ten minutes planning an opener, a learner task and a final check. Pitch it in two minutes and revise it using one specific observation.</p>
+  </div>
+</li>
+<li class="tip" id="keep-a-short-teaching-log">
+  <h3>Keep a short teaching log</h3>
+  <div class="tip-body" id="keep-a-short-teaching-log-body">
+    <p>Record what learners did and what you’ll change. “Most could name the glomerulus. Several drew filtration towards the blood. Next time I’ll ask everyone to add and explain the arrow before we move on.”</p>
+  </div>
+</li>
+</ul>
+
+</section>
+<section id="clinical" class="topic" tabindex="-1" aria-labelledby="clinical-title">
+<h2 id="clinical-title" tabindex="-1">Guide a small-group tutorial</h2>
+<ul class="tips" role="list">
+<li class="tip" id="agree-the-teaching-task-on-placement">
+  <h3>Give the group a clear task</h3>
+  <div class="tip-body" id="agree-the-teaching-task-on-placement-body">
+    <p>Set one task and say what everyone should produce. “In pairs, draw two arrows on the nephron diagram. Label one filtration and one reabsorption. Be ready to explain why each arrow points that way.”</p>
+  </div>
+</li>
+<li class="tip" id="use-fictional-or-properly-anonymised-cases">
+  <h3>Give everyone the same starting material</h3>
+  <div class="tip-body" id="use-fictional-or-properly-anonymised-cases-body">
+    <p>Put one labelled Gram-positive cell wall diagram on screen before distributing tasks. Give learners time to find the peptidoglycan layer and check that everyone can see it before comparing cell envelopes.</p>
+  </div>
+</li>
+<li class="tip" id="practise-one-clinical-action-at-a-time">
+  <h3>Practise one part at a time</h3>
+  <div class="tip-body" id="practise-one-clinical-action-at-a-time-body">
+    <p>Ask learners to point to the trachea on an anatomy image before tracing the airway down to each main bronchus. Give feedback on the first step, then let them try the full route.</p>
+  </div>
+</li>
+<li class="tip" id="demonstrate-the-complete-action-then-slow-down">
+  <h3>Show the whole explanation, then slow down</h3>
+  <div class="tip-body" id="demonstrate-the-complete-action-then-slow-down-body">
+    <p>Trace inhalation on a diagram in one go. Repeat it slowly. Pause after the diaphragm moves and ask a learner to tell you what happens to the pressure inside the lungs.</p>
+  </div>
+</li>
+<li class="tip" id="keep-hands-on-practice-appropriate-to-the-setting">
+  <h3>Give each pair access to the model</h3>
+  <div class="tip-body" id="keep-hands-on-practice-appropriate-to-the-setting-body">
+    <p>If you have one knee model, have one pair identify the kneecap on the model while another finds it on a labelled image. Swap so each pair can point to the landmark on the model.</p>
+  </div>
+</li>
+<li class="tip" id="use-an-observer-with-one-job">
+  <h3>Give the listener one thing to check</h3>
+  <div class="tip-body" id="use-an-observer-with-one-job-body">
+    <p>In pairs, have one learner explain how a competitive antagonist reduces the response to an agonist. Ask the listener to check that the explanation includes competition for the same binding site. Swap with a fresh diagram.</p>
+  </div>
+</li>
+<li class="tip" id="ask-for-an-explanation-after-the-action">
+  <h3>Ask why after they point or label</h3>
+  <div class="tip-body" id="ask-for-an-explanation-after-the-action-body">
+    <p>When a learner points out the outer membrane on a Gram-negative cell diagram, ask “How did you tell it apart from the inner membrane?” Use their answer to decide which layers to go over again.</p>
+  </div>
+</li>
+<li class="tip" id="use-snapps-in-a-simulated-case">
+  <h3>Let a learner explain the next diagram</h3>
+  <div class="tip-body" id="use-snapps-in-a-simulated-case-body">
+    <p>Hand over the pen and ask a learner to trace gas exchange on the diagram. Invite the group to ask one question. Use their answers to decide whether to revisit the direction of diffusion.</p>
+  </div>
+</li>
+<li class="tip" id="avoid-correcting-by-exposing-a-learner-in-front-of-a-patient">
+  <h3>Correct the idea without singling someone out</h3>
+  <div class="tip-body" id="avoid-correcting-by-exposing-a-learner-in-front-of-a-patient-body">
+    <p>If several arrows on the shared board point the wrong way, redraw one and ask “Which side has the higher oxygen partial pressure?” Give everyone time to revise their diagram.</p>
+  </div>
+</li>
+<li class="tip" id="end-a-placement-discussion-with-a-question-to-look-up">
+  <h3>End with a question to look up</h3>
+  <div class="tip-body" id="end-a-placement-discussion-with-a-question-to-look-up-body">
+    <p>Agree one question and where to check it. “We traced where glucose is reabsorbed. Check the course physiology notes for what happens when the transporters reach capacity. Bring back one sentence.”</p>
+  </div>
+</li>
+</ul>
+<div class="topic-sources">
+<details>
+<summary>Further reading on small-group teaching</summary>
+<p>For ways to start a discussion, bring quieter students in and close a tutorial, see <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC7712521/">Burgess and colleagues’ guide to facilitating small groups in the health professions</a>.</p>
+<p>For an example of asking students to vote, discuss and tackle a fresh question, see <a href="https://pubmed.ncbi.nlm.nih.gov/19119232/">Smith and colleagues’ study of peer discussion in a genetics class</a>.</p>
+</details>
+</div>
+</section>
+    </div>
+  </div>
+</main>
+<script>
+(() => {
+  const nav = document.getElementById('topics');
+  const picker = document.getElementById('topic-picker');
+  const search = document.getElementById('tip-search');
+  const filter = document.getElementById('filter');
+  const clear = document.getElementById('clear');
+  const reading = document.querySelector('.tips-reading');
+  const searchHeading = document.getElementById('tip-search-heading');
+  const results = document.getElementById('results');
+  const topics = Array.from(reading.querySelectorAll('.topic'), section => ({
+    section,
+    title: section.querySelector('h2'),
+    link: nav.querySelector(`a[href="#${section.id}"]`),
+    tips: Array.from(section.querySelectorAll('.tip'), row => ({
+      row,
+      heading: row.querySelector('h3'),
+      body: row.querySelector('.tip-body'),
+      words: normalise(row.textContent)
+    }))
+  }));
+  const tipsById = new Map();
+  let selected = topics[0];
+  let opened;
+
+  function normalise(text) {
+    return text.toLocaleLowerCase('en-GB').normalize('NFD')
+      .replace(/\p{M}/gu, '').replace(/[^\p{L}\p{N}]+/gu, ' ').trim();
+  }
+
+  function showTip(tip) {
+    if (opened) {
+      opened.button.setAttribute('aria-expanded', 'false');
+      opened.body.hidden = true;
+    }
+    if (tip) {
+      tip.button.setAttribute('aria-expanded', 'true');
+      tip.body.hidden = false;
+    }
+    opened = tip;
+  }
+
+  function updateHash(id, method) {
+    if (location.hash !== `#${id}`) {
+      history[method](null, '', `#${id}`);
+    }
+  }
+
+  function render(tip) {
+    const query = normalise(filter.value);
+    const terms = query ? query.split(' ') : [];
+    let count = 0;
+
+    searchHeading.hidden = !query;
+    reading.classList.toggle('tip-results', Boolean(query));
+    clear.hidden = filter.value.length === 0;
+    picker.value = query ? '' : selected.section.id;
+
+    for (const topic of topics) {
+      const isSelected = topic === selected;
+      if (isSelected && !query) {
+        topic.link.setAttribute('aria-current', 'location');
+      } else {
+        topic.link.removeAttribute('aria-current');
+      }
+      let matches = 0;
+      for (const record of topic.tips) {
+        const matchesQuery = terms.every(term => record.words.includes(term));
+        record.row.hidden = !matchesQuery;
+        matches += Number(matchesQuery);
+      }
+      topic.section.hidden = query ? matches === 0 : !isSelected;
+      count += matches;
+    }
+
+    results.textContent = !query ? '' : count === 0
+      ? 'No tips found. Try another word.'
+      : `${count} ${count === 1 ? 'tip' : 'tips'} found`;
+    showTip(tip ?? (!query ? selected.tips[0] : undefined));
+  }
+
+  function selectTopic(topic, focusTitle = true) {
+    selected = topic;
+    filter.value = '';
+    updateHash(topic.section.id, 'pushState');
+    render();
+    if (focusTitle) {
+      topic.title.scrollIntoView({ block: 'nearest' });
+      topic.title.focus({ preventScroll: true });
+    }
+  }
+
+  function followHash(focusTarget, initial = false) {
+    let fragment;
+    try {
+      fragment = decodeURIComponent(location.hash.slice(1));
+    } catch {
+      fragment = '';
+    }
+    const tip = tipsById.get(fragment);
+    const topic = tip?.topic ?? topics.find(item => [item.section.id, item.title.id].includes(fragment));
+    if (topic) {
+      selected = topic;
+      filter.value = '';
+    } else if (!fragment) {
+      selected = topics[0];
+      filter.value = '';
+    }
+    if (initial || topic || !fragment) render(tip);
+    if (fragment === 'main') {
+      document.getElementById('main').focus({ preventScroll: true });
+    }
+    if (fragment === 'topics' && picker.getClientRects().length) {
+      picker.scrollIntoView({ block: 'nearest' });
+      picker.focus({ preventScroll: true });
+    }
+    if (focusTarget && topic) {
+      const target = tip?.button ?? topic.title;
+      target.scrollIntoView({ block: 'nearest' });
+      target.focus({ preventScroll: true });
+    }
+  }
+
+  for (const topic of topics) {
+    topic.link.addEventListener('click', event => {
+      if (event.button || event.metaKey || event.ctrlKey || event.altKey || event.shiftKey) return;
+      event.preventDefault();
+      selectTopic(topic);
+    });
+    for (const tip of topic.tips) {
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.className = 'arrow';
+      button.textContent = tip.heading.textContent;
+      button.setAttribute('aria-controls', tip.body.id);
+      button.setAttribute('aria-expanded', 'false');
+      tip.heading.replaceChildren(button);
+      tip.row.classList.add('enhanced');
+      tip.body.hidden = true;
+      tip.button = button;
+      tip.topic = topic;
+      tipsById.set(tip.row.id, tip);
+      button.addEventListener('click', () => {
+        const shouldOpen = opened !== tip;
+        showTip(shouldOpen ? tip : undefined);
+        updateHash(shouldOpen ? tip.row.id : selected.section.id, 'replaceState');
+      });
+    }
+  }
+
+  picker.addEventListener('change', () => {
+    const topic = topics.find(item => item.section.id === picker.value);
+    if (topic) selectTopic(topic, false);
+  });
+  search.addEventListener('submit', event => event.preventDefault());
+  filter.addEventListener('input', () => {
+    if (tipsById.has(location.hash.slice(1))) {
+      updateHash(selected.section.id, 'replaceState');
+    }
+    render();
+  });
+  clear.addEventListener('click', () => {
+    filter.value = '';
+    updateHash(selected.section.id, 'replaceState');
+    render();
+    filter.focus();
+  });
+  filter.addEventListener('keydown', event => {
+    if (event.key === 'Escape' && filter.value) {
+      event.preventDefault();
+      clear.click();
+    }
+  });
+  window.addEventListener('hashchange', () => followHash(true));
+  picker.closest('.topic-choice').hidden = false;
+  nav.classList.add('with-picker');
+  search.hidden = false;
+  followHash(Boolean(location.hash), true);
+})();
+</script>
+</body>
+</html>
