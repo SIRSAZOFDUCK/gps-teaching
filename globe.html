@@ -24,18 +24,18 @@
            background:linear-gradient(to top, var(--panel) 75%, rgba(11,26,51,0)); display:flex; flex-direction:column; gap:8px; align-items:center; }
   .row { display:flex; gap:8px; flex-wrap:wrap; justify-content:center; align-items:center; }
   button { min-height:44px; padding:0 14px; border-radius:12px; border:1px solid var(--line); background:#12284a; color:#fff;
-           font:600 16px/1 inherit; font-family:inherit; cursor:pointer; }
+           font-family:inherit; font-size:18px; font-weight:600; line-height:1; cursor:pointer; }
   button.on { background:var(--cyan); color:var(--navy); border-color:var(--cyan); }
   button.place.on { background:var(--orange); border-color:var(--orange); color:var(--navy); }
-  .speed { display:flex; align-items:center; gap:8px; font-size:15px; color:var(--muted); }
+  .speed { display:flex; align-items:center; gap:8px; font-size:18px; color:var(--muted); }
   .speed input { width:140px; height:44px; accent-color:var(--cyan); }
-  #info { font-size:clamp(13px, 1.4vw, 18px); color:var(--muted); text-align:center; }
+  #info { font-size:clamp(15px, 1.6vw, 22px); color:var(--muted); text-align:center; }
   #info b { color:#fff; }
-  @media (min-width:1000px) { button { font-size:18px; min-height:48px; padding:0 18px; } }
+  @media (min-width:1000px) { button { font-size:22px; min-height:54px; padding:0 20px; } .speed { font-size:21px; } }
   @media (orientation:landscape) and (max-height:520px) {
     #panel { left:auto; top:0; width:250px; justify-content:center; background:var(--panel); padding:8px; gap:6px; overflow:auto; }
     #top { right:250px; }
-    button { min-height:40px; padding:0 10px; font-size:14px; }
+    button { min-height:40px; padding:0 10px; font-size:16px; }
     .speed input { width:110px; }
     #info { font-size:12px; }
   }
@@ -52,7 +52,7 @@
     <button id="iss">ISS comparison</button>
     <label class="speed">Speed <input id="speed" type="range" min="1" max="10" step="1" value="1"> <span id="speedv">1×</span></label>
   </div>
-  <div id="info"><b>24+ satellites</b> · 6 orbits · 20,200 km up · at least 4 always visible</div>
+  <div id="info"><b>24 satellites</b> on 6 orbit rings (4 per ring) · 20,200 km up · at least 4 always visible</div>
 </div>
 
 <script>
