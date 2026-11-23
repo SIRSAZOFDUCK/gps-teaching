@@ -121,7 +121,7 @@
     <div class="row">
       <button class="btn warn" id="fix" hidden>Fix my clock</button>
       <button class="btn primary" id="next">Next level →</button>
-      <button class="btn" id="newphone">New phone</button>
+      <button class="btn" id="newphone">Find a new phone</button>
     </div>
   </section>
 </main>
@@ -162,7 +162,7 @@
 
   function newPhone() {
     S.phone = { x: 500 + (Math.random() * 2 - 1) * PHONE_BOX, y: 500 + (Math.random() * 2 - 1) * PHONE_BOX };
-    S.guess = null; S.guesses = 0; S.lastOff = null; S.solved = false; S.fixed = false;
+    S.guess = null; S.guesses = 0; S.lastOff = null; S.prevOff = null; S.solved = false; S.fixed = false;
     say('');
     render();
   }
@@ -274,10 +274,11 @@
     $('fix').hidden = S.level !== 5;
     $('fix').disabled = !(S.sats[3].placed && S.err > 0.004);
     $('next').textContent = S.level < 5 ? 'Next level →' : 'Finish';
-    $('lastguess').textContent = S.level <= 3 && S.lastOff != null ? `Your last guess was ${fmt(S.lastOff)} off.` : '';
+    $('lastguess').textContent = S.level <= 3 && S.prevOff != null ? `Your last guess was ${fmt(S.prevOff)} off.` : '';
   }
 
   function setLevel(l) {
+    if (S.lastOff != null) { S.prevOff = S.lastOff; S.lastOff = null; }   // carry the score into the next level only
     S.level = l; S.guess = null; S.drag = null;   // clear the marker; the gold line keeps the score
     if (l <= 3) { S.err = 0; S.solved = false; S.fixed = false; }
     if (l >= 4) {                                   // make sure 3 satellites are on the map
