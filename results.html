@@ -1,0 +1,215 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GPS quiz results</title>
+<style>
+  :root { --navy: #0B1A33; --navy-2: #12284A; --navy-3: #1B3763; --white: #FFFFFF; --muted: #C7D2E3;
+          --cyan: #22D3EE; --grey: #94A3B8; --orange: #F97316; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; }
+  body { background: var(--navy); color: var(--white); font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+         display: flex; flex-direction: column; min-height: 100vh; overflow: hidden; }
+  header { display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; padding: 2.2vh 3vw 0; flex-wrap: wrap; }
+  h1 { margin: 0; font-size: clamp(26px, 3.4vw, 54px); line-height: 1.1; }
+  h1 span { color: var(--orange); }
+  .count { font-size: clamp(20px, 2.2vw, 36px); font-weight: 700; color: var(--muted); white-space: nowrap; }
+  .count b { color: var(--white); }
+  .avgs { display: flex; gap: 4vw; padding: 1.5vh 3vw 0; flex-wrap: wrap; }
+  .avg { display: flex; align-items: baseline; gap: 14px; }
+  .avg .key { width: clamp(22px, 2vw, 34px); height: clamp(22px, 2vw, 34px); border-radius: 6px; align-self: center; }
+  .avg .lab { font-size: clamp(22px, 2.4vw, 40px); font-weight: 700; }
+  .avg .val { font-size: clamp(40px, 5.2vw, 88px); font-weight: 800; line-height: 1; }
+  .avg.pre .key { background: repeating-linear-gradient(45deg, var(--grey) 0 6px, #6B7A90 6px 10px); }
+  .avg.post .key { background: var(--cyan); }
+  .avg.post .val { color: var(--cyan); }
+  .avg.hidden { visibility: hidden; }
+  #chartwrap { flex: 1; padding: 1vh 2vw 1vh; min-height: 0; }
+  svg { width: 100%; height: 100%; display: block; }
+  .axis text { fill: var(--muted); font-size: 22px; font-weight: 600; }
+  .grid line { stroke: #2A4472; stroke-width: 2; }
+  .qlab { fill: var(--white); font-size: 30px; font-weight: 800; text-anchor: middle; }
+  .qsub { fill: var(--muted); font-size: 24px; font-weight: 600; text-anchor: middle; }
+  .val { font-weight: 800; }
+  .barval { font-size: 30px; font-weight: 800; text-anchor: middle; }
+  .bartag { font-size: 20px; font-weight: 700; text-anchor: middle; fill: var(--navy); }
+  .bar { transform-box: fill-box; transform-origin: 50% 100%; transition: transform .8s cubic-bezier(.2,.8,.2,1); }
+  .lbl { transition: transform .8s cubic-bezier(.2,.8,.2,1), opacity .4s; }
+  .post-layer { transition: opacity .5s; }
+  .post-layer.off { opacity: 0; }
+  footer { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 0 3vw 1.6vh; color: var(--muted); font-size: clamp(14px, 1.2vw, 20px); }
+  footer button { font: inherit; color: var(--white); background: var(--navy-2); border: 2px solid var(--navy-3); border-radius: 10px; padding: 8px 14px; cursor: pointer; }
+  footer button:hover { border-color: var(--cyan); }
+  footer .danger { border-color: var(--orange); }
+  #status.warn { color: var(--orange); }
+  @media (prefers-reduced-motion: reduce) { .bar, .lbl, .post-layer { transition: none; } }
+</style>
+</head>
+<body>
+<header>
+  <h1>GPS quiz · <span id="title">before vs after</span></h1>
+  <div class="count" id="count">Pre: <b>0</b> · Post: <b>0</b></div>
+</header>
+<div class="avgs">
+  <div class="avg pre"><span class="key"></span><span class="lab">Before</span><span class="val" id="avgPre">–</span></div>
+  <div class="avg post" id="avgPostBox"><span class="key"></span><span class="lab">After</span><span class="val" id="avgPost">–</span></div>
+</div>
+<div id="chartwrap"><svg id="chart" viewBox="0 0 1600 640" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Percentage correct for each question, before and after"></svg></div>
+<footer>
+  <span id="status">Connecting…</span>
+  <span>
+    <button id="togglePost" title="Shortcut: P">Show after</button>
+    <button id="fs" title="Shortcut: F">Full screen</button>
+    <button id="reset" class="danger" hidden>Reset (clear all answers)</button>
+  </span>
+</footer>
+
+<script>
+/* ================== EDIT HERE ==================
+   SCRIPT_URL: the same Apps Script web app URL as in quiz.html.
+   LABELS: one short label per question, in the same order as quiz.html's QUESTIONS.
+   Page options: ?show=pre shows the "before" bars only (press P to reveal "after");
+   ?demo=1 shows made-up numbers for rehearsing; ?admin=1 shows the Reset button. */
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwLad1MxUWz04uQQNdYNZNuSXe1EJRnbiSq9_t_pgLTZeLkyNN8ik4y0rHMKNyQs0FA/exec";
+const LABELS = ["How far", "What it sends", "How many", "How high", "Einstein"];
+const TOTAL = LABELS.length;
+/* =============================================== */
+
+const params = new URLSearchParams(location.search);
+const DEMO = params.get("demo") === "1";
+const ADMIN = params.get("admin") === "1";
+let showPost = params.get("show") !== "pre";
+
+const svg = document.getElementById("chart");
+const NS = "http://www.w3.org/2000/svg";
+const W = 1600, H = 640, L = 90, R = 30, T = 60, B = 110;
+const plotH = H - T - B, plotW = W - L - R;
+const bars = [];
+
+function mk(tag, attrs, parent) {
+  const e = document.createElementNS(NS, tag);
+  for (const k in attrs) e.setAttribute(k, attrs[k]);
+  (parent || svg).appendChild(e);
+  return e;
+}
+
+function build() {
+  const defs = mk("defs", {});
+  const pat = mk("pattern", { id: "hatch", width: 14, height: 14, patternUnits: "userSpaceOnUse", patternTransform: "rotate(45)" }, defs);
+  mk("rect", { width: 14, height: 14, fill: "#94A3B8" }, pat);
+  mk("rect", { width: 5, height: 14, fill: "#6B7A90" }, pat);
+
+  const grid = mk("g", { class: "grid axis" });
+  for (const v of [0, 25, 50, 75, 100]) {
+    const y = T + plotH * (1 - v / 100);
+    mk("line", { x1: L, x2: W - R, y1: y, y2: y }, grid);
+    const t = mk("text", { x: L - 14, y: y + 8, "text-anchor": "end" }, grid);
+    t.textContent = v + "%";
+  }
+  const group = plotW / TOTAL, bw = Math.min(150, group * 0.32), gap = 18;
+  const postLayer = mk("g", { class: "post-layer" + (showPost ? "" : " off"), id: "postLayer" });
+  for (let i = 0; i < TOTAL; i++) {
+    const cx = L + group * (i + 0.5);
+    const entry = {};
+    for (const [phase, dx, fill, layer] of [["pre", -bw / 2 - gap / 2, "url(#hatch)", svg], ["post", bw / 2 + gap / 2, "#22D3EE", postLayer]]) {
+      const x = cx + dx - bw / 2;
+      const g = mk("g", {}, layer);
+      const rect = mk("rect", { class: "bar", x, y: T, width: bw, height: plotH, rx: 8, fill }, g);
+      rect.style.transform = "scaleY(0)";
+      const val = mk("text", { class: "barval lbl", x: cx + dx, y: T + plotH - 12, fill: phase === "pre" ? "#E2E8F0" : "#22D3EE" }, g);
+      val.textContent = "";
+      const tag = mk("text", { class: "qsub", x: cx + dx, y: T + plotH + 30 }, g);
+      tag.textContent = phase === "pre" ? "before" : "after";
+      entry[phase] = { rect, val };
+    }
+    const q = mk("text", { class: "qlab", x: cx, y: T + plotH + 76 });
+    q.textContent = `Q${i + 1} ${LABELS[i]}`;
+    bars.push(entry);
+  }
+}
+
+function render(data) {
+  const pre = data.pre || { n: 0, avg: null, pct: [] };
+  const post = data.post || { n: 0, avg: null, pct: [] };
+  document.getElementById("count").innerHTML = `Pre: <b>${pre.n}</b> · Post: <b>${post.n}</b>`;
+  document.getElementById("avgPre").textContent = pre.n ? `${fmt(pre.avg)}/${TOTAL}` : "–";
+  document.getElementById("avgPost").textContent = post.n ? `${fmt(post.avg)}/${TOTAL}` : "–";
+  bars.forEach((b, i) => {
+    for (const [phase, d] of [["pre", pre], ["post", post]]) {
+      const v = d.n ? (d.pct[i] || 0) : 0;
+      const { rect, val } = b[phase];
+      rect.style.transform = `scaleY(${Math.max(v, 0.4) / 100})`;
+      const y = T + plotH * (1 - v / 100);
+      val.style.transform = `translateY(${y - (T + plotH) - 0}px)`;
+      val.textContent = d.n ? Math.round(v) + "%" : "";
+    }
+  });
+}
+function fmt(x) { return x === null || x === undefined ? "–" : (Math.round(x * 10) / 10).toString(); }
+
+function setPost(on) {
+  showPost = on;
+  document.getElementById("postLayer").classList.toggle("off", !on);
+  document.getElementById("avgPostBox").classList.toggle("hidden", !on);
+  document.getElementById("title").textContent = on ? "before vs after" : "where we're starting from";
+  document.getElementById("togglePost").textContent = on ? "Hide after" : "Show after";
+}
+
+/* ---------- data ---------- */
+const statusEl = document.getElementById("status");
+let demoState = null;
+function demoData() {
+  if (!demoState) demoState = { preN: 0, postN: 0, preP: [55, 40, 20, 30, 25], postP: [92, 88, 70, 85, 80] };
+  demoState.preN = Math.min(42, demoState.preN + Math.ceil(Math.random() * 6));
+  demoState.postN = Math.min(38, demoState.postN + (demoState.preN > 20 ? Math.ceil(Math.random() * 5) : 0));
+  const jig = a => a.map(v => Math.max(0, Math.min(100, v + (Math.random() * 8 - 4))));
+  const pre = jig(demoState.preP), post = jig(demoState.postP);
+  const avg = a => a.reduce((s, v) => s + v, 0) / 100;
+  return { pre: { n: demoState.preN, pct: pre, avg: avg(pre) }, post: { n: demoState.postN, pct: post, avg: avg(post) } };
+}
+async function refresh() {
+  if (DEMO) { render(demoData()); statusEl.textContent = "Demo numbers (not real answers)"; statusEl.className = "warn"; return; }
+  if (!SCRIPT_URL) { statusEl.textContent = "No sheet connected yet: add the Apps Script URL at the top of this file"; statusEl.className = "warn"; return; }
+  try {
+    const r = await fetch(SCRIPT_URL + "?t=" + Date.now(), { cache: "no-store" });
+    const data = await r.json();
+    render(data);
+    statusEl.textContent = "Live · updated " + new Date().toLocaleTimeString("en-GB");
+    statusEl.className = "";
+  } catch (e) {
+    statusEl.textContent = "Can't reach the sheet – retrying…";
+    statusEl.className = "warn";
+  }
+}
+
+/* ---------- controls ---------- */
+document.getElementById("togglePost").onclick = () => setPost(!showPost);
+document.getElementById("fs").onclick = toggleFs;
+function toggleFs() { document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen().catch(() => {}); }
+document.addEventListener("keydown", e => {
+  if (e.key === "p" || e.key === "P") setPost(!showPost);
+  if (e.key === "f" || e.key === "F") toggleFs();
+});
+if (ADMIN) {
+  const btn = document.getElementById("reset");
+  btn.hidden = false;
+  btn.onclick = async () => {
+    if (!SCRIPT_URL) { alert("No sheet connected."); return; }
+    const word = prompt('This deletes every answer in the sheet. Type the reset word from Code.gs (RESET_WORD) to confirm:');
+    if (!word) return;
+    try {
+      await fetch(SCRIPT_URL, { method: "POST", mode: "no-cors", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify({ action: "reset", word }) });
+      statusEl.textContent = "Reset sent – the chart will empty within a few seconds if the word was right.";
+      setTimeout(refresh, 1500);
+    } catch (e) { alert("Couldn't reach the sheet. Try again."); }
+  };
+}
+
+build();
+setPost(showPost);
+refresh();
+setInterval(refresh, 5000);
+</script>
+</body>
+</html>

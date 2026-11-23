@@ -1,0 +1,276 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>GPS quiz</title>
+<style>
+  :root {
+    --navy: #0B1A33; --navy-2: #12284A; --navy-3: #1B3763;
+    --white: #FFFFFF; --muted: #C7D2E3; --cyan: #22D3EE; --orange: #F97316; --grey: #94A3B8;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; }
+  body {
+    background: var(--navy); color: var(--white);
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+    font-size: 19px; line-height: 1.4;
+    display: flex; flex-direction: column; min-height: 100dvh;
+  }
+  header { padding: 14px 16px 0; max-width: 760px; width: 100%; margin: 0 auto; }
+  .brand { font-weight: 700; color: var(--orange); font-size: 17px; letter-spacing: .02em; }
+  .bar { height: 10px; background: var(--navy-3); border-radius: 99px; margin-top: 10px; overflow: hidden; }
+  .bar > i { display: block; height: 100%; width: 0; background: var(--cyan); border-radius: 99px; transition: width .35s ease; }
+  .step { color: var(--muted); font-size: 16px; margin-top: 6px; min-height: 22px; }
+  main { flex: 1; width: 100%; max-width: 760px; margin: 0 auto; padding: 18px 16px 72px; display: flex; flex-direction: column; }
+  h1 { font-size: clamp(26px, 6vw, 38px); line-height: 1.2; margin: 6px 0 14px; }
+  h2 { font-size: clamp(23px, 5.2vw, 32px); line-height: 1.25; margin: 4px 0 18px; }
+  p { margin: 0 0 14px; }
+  .note { color: var(--muted); font-size: 17px; }
+  .choices { display: grid; gap: 12px; }
+  button.big {
+    font: inherit; font-size: 20px; font-weight: 600; text-align: left; color: var(--white);
+    background: var(--navy-2); border: 3px solid var(--navy-3); border-radius: 16px;
+    padding: 16px 18px; min-height: 64px; width: 100%; cursor: pointer;
+    display: flex; gap: 14px; align-items: center;
+    transition: border-color .15s, background .15s, transform .08s;
+  }
+  button.big:hover { border-color: var(--cyan); }
+  button.big:active { transform: scale(.985); }
+  button.big:focus-visible { outline: 4px solid var(--orange); outline-offset: 2px; }
+  button.big .letter {
+    flex: none; width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center;
+    border: 3px solid var(--cyan); color: var(--cyan); font-weight: 800;
+  }
+  button.big.picked { border-color: var(--orange); background: #2A2440; }
+  button.big.picked .letter { background: var(--orange); border-color: var(--orange); color: var(--navy); }
+  .phase { display: grid; gap: 14px; grid-template-columns: 1fr 1fr; margin-top: 8px; }
+  .phase button.big { justify-content: center; text-align: center; font-size: 24px; min-height: 96px; }
+  .score { font-size: clamp(54px, 16vw, 96px); font-weight: 800; line-height: 1; color: var(--cyan); margin: 8px 0 12px; }
+  .from { font-size: clamp(22px, 5vw, 30px); font-weight: 700; margin-bottom: 18px; }
+  .from b { color: var(--orange); }
+  ol.review { padding: 0; margin: 6px 0 0; list-style: none; display: grid; gap: 10px; }
+  ol.review li { background: var(--navy-2); border-radius: 14px; padding: 12px 14px; border-left: 6px solid var(--grey); }
+  ol.review li.ok { border-left-color: var(--cyan); }
+  ol.review li.no { border-left-color: var(--orange); }
+  .mark { font-weight: 800; margin-right: 6px; }
+  .ok .mark { color: var(--cyan); } .no .mark { color: var(--orange); }
+  .ans { color: var(--muted); font-size: 17px; margin-top: 4px; }
+  footer { position: sticky; bottom: 0; width: 100%; }
+  #saving {
+    margin: 0 auto 12px; width: fit-content; max-width: calc(100% - 32px);
+    background: var(--navy-3); color: var(--white); border-radius: 99px; padding: 8px 16px; font-size: 16px;
+    display: none;
+  }
+  #saving.show { display: block; }
+  #saving.warn { background: #5A2A10; }
+  @media (orientation: landscape) and (max-height: 500px) {
+    main { padding-top: 8px; }
+    h2 { font-size: 22px; margin-bottom: 10px; }
+    .choices { grid-template-columns: 1fr 1fr; gap: 10px; }
+    button.big { min-height: 54px; padding: 10px 14px; font-size: 18px; }
+    .phase button.big { min-height: 70px; }
+  }
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+</head>
+<body>
+<header>
+  <div class="brand">I Know Where You Live · GPS quiz</div>
+  <div class="bar" aria-hidden="true"><i id="progress"></i></div>
+  <div class="step" id="step" aria-live="polite"></div>
+</header>
+<main id="app" aria-live="polite"></main>
+<footer><div id="saving" role="status"></div></footer>
+
+<script>
+/* ================== EDIT HERE ==================
+   SCRIPT_URL: the Google Apps Script web app URL (ends in /exec). Leave "" to test without a sheet
+   (answers are then kept on this device only, and a warning shows).
+   QUESTIONS: same questions before and after. "answer" is the index of the correct option (0 = A).
+   "short" is the label used on the results chart. Keep results.html's LABELS in the same order. */
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwLad1MxUWz04uQQNdYNZNuSXe1EJRnbiSq9_t_pgLTZeLkyNN8ik4y0rHMKNyQs0FA/exec";
+const QUESTIONS = [
+  { q: "How does your phone work out how far away a satellite is?",
+    options: ["From how strong the signal is", "From how long the signal took to arrive", "The satellite tells it the distance", "From the angle the signal arrives at"],
+    answer: 1, short: "How far" },
+  { q: "What does each GPS satellite broadcast?",
+    options: ["A map of the area below it", "Its exact time and its position", "The location of every phone nearby", "Nothing, until a phone asks for a signal"],
+    answer: 1, short: "What it sends" },
+  { q: "What is the smallest number of satellites your phone needs to fix its position?",
+    options: ["1", "2", "3", "4"],
+    answer: 3, short: "How many" },
+  { q: "Roughly how high above Earth do GPS satellites orbit?",
+    options: ["400 km, about as high as the International Space Station", "2,000 km", "20,000 km", "380,000 km, about as far away as the Moon"],
+    answer: 2, short: "How high" },
+  { q: "Why do the clocks on GPS satellites need correcting?",
+    options: ["They're cheap clocks that drift", "Relativity makes them run slightly fast", "Solar wind slows them down", "They don't need correcting"],
+    answer: 1, short: "Einstein" },
+];
+/* =============================================== */
+
+const LETTERS = "ABCD";
+const store = {
+  get(k, d) { try { const v = localStorage.getItem(k); return v === null ? d : JSON.parse(v); } catch { return d; } },
+  set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} },
+};
+function anonId() {
+  let id = store.get("gpsq_id", null);
+  if (!id) {
+    id = (crypto.randomUUID ? crypto.randomUUID() : String(Math.random()).slice(2) + Date.now()).replace(/-/g, "").slice(0, 12);
+    store.set("gpsq_id", id);
+  }
+  return id;
+}
+
+const app = document.getElementById("app");
+const stepEl = document.getElementById("step");
+const bar = document.getElementById("progress");
+const savingEl = document.getElementById("saving");
+const state = { phase: null, i: 0, picks: [] };
+
+function setProgress(done, total, label) {
+  bar.style.width = (100 * done / total) + "%";
+  stepEl.textContent = label || "";
+}
+function el(html) { const t = document.createElement("template"); t.innerHTML = html.trim(); return t.content; }
+function esc(s) { return String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c])); }
+
+function showStart() {
+  setProgress(0, 1, "");
+  app.replaceChildren(el(`
+    <h1>Is this before or after the session?</h1>
+    <p class="note">Anonymous – no names collected.</p>
+    <div class="phase">
+      <button class="big" data-p="pre">Before</button>
+      <button class="big" data-p="post">After</button>
+    </div>`));
+  app.querySelectorAll("[data-p]").forEach(b => b.onclick = () => begin(b.dataset.p));
+}
+
+function begin(phase) {
+  state.phase = phase; state.i = 0; state.picks = [];
+  history.replaceState(null, "", "?phase=" + phase);
+  if (phase === "pre") {
+    app.replaceChildren(el(`
+      <h1>What do you already know?</h1>
+      <p>Five questions. Guess if you don't know – guessing now helps you learn it later, even if you guess wrong.</p>
+      <p class="note">Anonymous – no names collected.</p>
+      <div class="choices"><button class="big" id="go" style="justify-content:center">Start</button></div>`));
+  } else {
+    app.replaceChildren(el(`
+      <h1>What do you know now?</h1>
+      <p>The same five questions as before.</p>
+      <p class="note">Anonymous – no names collected.</p>
+      <div class="choices"><button class="big" id="go" style="justify-content:center">Start</button></div>`));
+  }
+  setProgress(0, QUESTIONS.length, phase === "pre" ? "Before the session" : "After the session");
+  document.getElementById("go").onclick = showQuestion;
+}
+
+function showQuestion() {
+  const n = state.i, Q = QUESTIONS[n];
+  setProgress(n, QUESTIONS.length, `Question ${n + 1} of ${QUESTIONS.length}`);
+  app.replaceChildren(el(`
+    <h2>${esc(Q.q)}</h2>
+    <div class="choices">
+      ${Q.options.map((o, k) => `<button class="big" data-k="${k}"><span class="letter">${LETTERS[k]}</span><span>${esc(o)}</span></button>`).join("")}
+    </div>`));
+  const buttons = app.querySelectorAll("[data-k]");
+  buttons[0].focus({ preventScroll: true });
+  let locked = false;
+  buttons.forEach(b => b.onclick = () => {
+    if (locked) return; locked = true;
+    b.classList.add("picked");
+    state.picks[n] = Number(b.dataset.k);
+    setTimeout(() => {
+      state.i++;
+      if (state.i < QUESTIONS.length) showQuestion(); else finish();
+    }, 280);
+  });
+}
+
+function finish() {
+  const correct = state.picks.map((p, k) => p === QUESTIONS[k].answer ? 1 : 0);
+  const score = correct.reduce((a, b) => a + b, 0);
+  const total = QUESTIONS.length;
+  setProgress(total, total, "Done");
+  const record = {
+    id: anonId(), phase: state.phase, t: new Date().toISOString(),
+    answers: state.picks.map(p => LETTERS[p]), correct, score, total,
+  };
+  store.set("gpsq_score_" + state.phase, score);
+  queue(record);
+
+  if (state.phase === "pre") {
+    app.replaceChildren(el(`
+      <h1>Thanks, we'll come back to these!</h1>
+      <p>Keep your guesses in mind. You'll answer the same questions at the end.</p>`));
+  } else {
+    const pre = store.get("gpsq_score_pre", null);
+    const fromLine = pre === null ? "" :
+      `<div class="from">You went from <b>${pre}/${total}</b> to <b>${score}/${total}</b></div>`;
+    app.replaceChildren(el(`
+      <h1>Your score</h1>
+      <div class="score">${score}/${total}</div>
+      ${fromLine}
+      <ol class="review">
+        ${QUESTIONS.map((Q, k) => {
+          const ok = correct[k] === 1;
+          return `<li class="${ok ? "ok" : "no"}">
+            <span class="mark">${ok ? "✓ Right" : "✗ Not quite"}</span> ${esc(Q.q)}
+            <div class="ans">Answer: ${LETTERS[Q.answer]}. ${esc(Q.options[Q.answer])}${ok ? "" : ` · you said ${LETTERS[state.picks[k]]}`}</div>
+          </li>`;
+        }).join("")}
+      </ol>`));
+  }
+}
+
+/* ---------- saving: an outbox kept on the device, retried until the sheet has it ---------- */
+function queue(record) {
+  const box = store.get("gpsq_outbox", []);
+  box.push(record);
+  store.set("gpsq_outbox", box);
+  flush();
+}
+let flushing = false, retryTimer = null, failures = 0;
+async function flush() {
+  if (flushing) return;
+  const box = store.get("gpsq_outbox", []);
+  if (!box.length) { hideSaving(); return; }
+  if (!SCRIPT_URL) {
+    showSaving("Test mode: no sheet connected, answers kept on this device", true);
+    return;
+  }
+  flushing = true;
+  showSaving(failures ? "Still saving… (checking the Wi-Fi)" : "Saving…", failures > 2);
+  try {
+    // text/plain avoids a CORS preflight, which Apps Script can't answer
+    await fetch(SCRIPT_URL, { method: "POST", mode: "no-cors", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(box[0]) });
+    const rest = store.get("gpsq_outbox", []);
+    rest.shift();
+    store.set("gpsq_outbox", rest);
+    failures = 0;
+    flushing = false;
+    if (rest.length) flush(); else showSaved();
+  } catch (e) {
+    failures++;
+    flushing = false;
+    clearTimeout(retryTimer);
+    retryTimer = setTimeout(flush, Math.min(15000, 2000 * failures));
+  }
+}
+function showSaving(text, warn) { savingEl.textContent = text; savingEl.className = "show" + (warn ? " warn" : ""); }
+function showSaved() { showSaving("Saved ✓", false); setTimeout(hideSaving, 2500); }
+function hideSaving() { savingEl.className = ""; }
+window.addEventListener("online", flush);
+setInterval(flush, 8000);
+
+/* ---------- start ---------- */
+anonId();
+flush();
+const p = new URLSearchParams(location.search).get("phase");
+if (p === "pre" || p === "post") begin(p); else showStart();
+</script>
+</body>
+</html>
