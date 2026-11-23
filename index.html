@@ -258,8 +258,8 @@
       if (S.solved) s += `<circle class="ripple o" cx="${p.x}" cy="${p.y}" r="${16 * k}"/>`;
     }
     if (S.solved && S.level === 3) {
-      const y = S.phone.y > 500 ? S.phone.y - 60 * k : S.phone.y + 70 * k;
-      s += `<text class="bigword" x="${Math.min(800, Math.max(200, S.phone.x))}" y="${y}" font-size="${34 * k}" text-anchor="middle">Trilateration!</text>`;
+      const bf = Math.min(34 * k, 90);   // bottom-right corner of the map
+      s += `<text class="bigword" x="${1000 - 24}" y="${1000 - 28}" font-size="${bf}" text-anchor="end">Trilateration!</text>`;
     }
     // satellites (unavailable ones dimmed in the dock)
 
