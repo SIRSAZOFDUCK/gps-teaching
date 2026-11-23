@@ -40,7 +40,8 @@
   .slider label { font-size:16px; }
   .slider label b { color:var(--orange); }
   input[type=range] { width:100%; height:44px; accent-color:var(--orange); }
-  #score { font-size:14px; color:var(--muted); }
+  #lastguess { font-size:19px; font-weight:800; color:#FBBF24; }
+  #lastguess:empty { display:none; }
   .note { font-size:14px; line-height:1.4; color:var(--muted); }
   .note b { color:#fff; }
   [hidden] { display:none !important; }
@@ -107,6 +108,7 @@
     </svg>
   </div>
   <section id="panel" aria-live="polite">
+    <div id="lastguess"></div>
     <div class="lvl" id="lvlname"></div>
     <p id="prompt"></p>
     <p id="feedback"></p>
@@ -119,9 +121,6 @@
       <button class="btn primary" id="next">Next level →</button>
       <button class="btn" id="newphone">New phone</button>
     </div>
-    <div id="score"></div>
-    <div class="note"><b>The number</b> is how far the satellite is from the phone: the circle's radius. Move a satellite and its circle changes size, because its distance to the phone changes. The phone stays put.</div>
-    <div class="note">Satellites stay in the outer sky zone because real ones are always far away (at least 20,200 km). The circles stand in for spheres: real GPS works in 3D.</div>
   </section>
 </main>
 <div id="closing" hidden>
@@ -141,13 +140,13 @@
   const DOCK = [[140, 58], [380, 58], [620, 58], [860, 58]];
   const AUTO = [[130, 330], [870, 300], [560, 890], [150, 860]];
   const SKY = 330;                 // satellites must stay at least this far from the centre (the outer sky zone)
-  const PHONE_BOX = 180;           // the phone hides within this distance of the centre   // used when jumping ahead
+  const PHONE_BOX = 240;           // the phone hides within this distance of the centre   // used when jumping ahead
   const LEVELS = {
-    1: { n:1, name:'Level 1 · One satellite', prompt:'Drag satellite 1 into the sky zone. It can tell how far away the phone is, but not in which direction. The circle is every spot that distance from the satellite. Tap where you think the phone is.' },
-    2: { n:2, name:'Level 2 · Two satellites', prompt:'Add satellite 2. The phone is on both circles, so it must be where they cross. But which crossing? Tap your guess.' },
-    3: { n:3, name:'Level 3 · Three satellites', prompt:'Add satellite 3. The phone is on all three circles. Tap the one spot where they all meet.' },
-    4: { n:3, name:'Level 4 · The cheap clock', prompt:"Your phone's clock is cheap. Slide the clock error up. What goes wrong?" },
-    5: { n:4, name:'Level 5 · The fourth satellite', prompt:"Drag satellite 4 onto the map, then press “Fix my clock”." },
+    1: { n:1, name:'Level 1 · One satellite', prompt:'Drag satellite 1 into the sky zone.' },
+    2: { n:2, name:'Level 2 · Two satellites', prompt:'Add satellite 2. The phone is on both circles. Tap where you think the phone is.' },
+    3: { n:3, name:'Level 3 · Three satellites', prompt:'Add satellite 3. The phone is on all three circles. Tap where you think the phone is.' },
+    4: { n:3, name:'Level 4 · The cheap clock', prompt:"Slide the phone's clock error up. What happens?" },
+    5: { n:4, name:'Level 5 · The fourth satellite', prompt:"Add satellite 4, then press “Fix my clock”." },
   };
   const teacher = new URLSearchParams(location.search).get('teacher') === '1';
 
@@ -173,8 +172,8 @@
     const streets = ['M-20 420 C 200 380, 380 470, 560 430 S 880 360, 1020 400', 'M300 -20 C 330 220, 260 420, 320 640 S 380 900, 340 1020',
                      'M640 1020 C 660 820, 720 700, 700 520 S 760 200, 820 -20', 'M-20 760 C 220 740, 480 800, 1020 720'];
     for (const d of streets) s += `<path d="${d}" fill="none" stroke="#1a3866" stroke-width="7" stroke-linecap="round" opacity=".7"/>`;
-    // inner ground zone (phone hides here) and outer sky zone (satellites go here)
-    s += `<rect x="${500 - SKY}" y="${500 - SKY}" width="${2 * SKY}" height="${2 * SKY}" fill="rgba(255,255,255,.035)" stroke="#3a5a8c" stroke-dasharray="10 8" stroke-width="1.5" vector-effect="non-scaling-stroke"/>`;
+    // shaded outer sky zone (satellites go here)
+    s += `<path d="M0 ${DOCK_Y}H1000V1000H0Z M${500 - SKY} ${500 - SKY}V${500 + SKY}H${500 + SKY}V${500 - SKY}Z" fill="rgba(34,211,238,.07)" fill-rule="evenodd"/>`;
     s += `<line x1="0" y1="${DOCK_Y}" x2="1000" y2="${DOCK_Y}" stroke="#2a4a7c" stroke-dasharray="6 8" vector-effect="non-scaling-stroke"/>`;
     $('bg').innerHTML = s;
   })();
@@ -251,8 +250,7 @@
       s += `<text class="bigword" x="${Math.min(800, Math.max(200, S.phone.x))}" y="${y}" font-size="${34 * k}" text-anchor="middle">Trilateration!</text>`;
     }
     // satellites (unavailable ones dimmed in the dock)
-    s += `<text class="docktext" x="500" y="${500 + SKY - 12 * k}" font-size="${12 * k}" text-anchor="middle" opacity=".8">the phone is hidden inside the dashed square</text>`;
-    s += `<text class="docktext" x="500" y="${500 + SKY + (500 - SKY) / 2 + 4 * k}" font-size="${12 * k}" text-anchor="middle" opacity=".6">sky zone: satellites go out here</text>`;
+    s += `<text class="docktext" x="500" y="${500 + SKY + (500 - SKY) / 2 + 4 * k}" font-size="${12 * k}" text-anchor="middle" opacity=".75">sky zone</text>`;
     if (act.some(x => !x.placed)) s += `<text class="docktext" x="500" y="${DOCK_Y - 14}" font-size="${13 * k}" text-anchor="middle">drag a satellite onto the map</text>`;
     S.sats.forEach((x, i) => {
       const avail = i < lv.n;
@@ -275,13 +273,11 @@
     $('fix').hidden = S.level !== 5;
     $('fix').disabled = !(S.sats[3].placed && S.err > 0.004);
     $('next').textContent = S.level < 5 ? 'Next level →' : 'Finish';
-    $('score').textContent = S.level <= 3
-      ? `Guesses: ${S.guesses}${S.lastOff != null ? ` · last guess ${fmt(S.lastOff)} off` : ''}`
-      : '';
+    $('lastguess').textContent = S.level <= 3 && S.lastOff != null ? `Your last guess was ${fmt(S.lastOff)} off.` : '';
   }
 
   function setLevel(l) {
-    S.level = l; S.guess = null; S.drag = null;
+    S.level = l; S.guess = null; S.drag = null;   // clear the marker; the gold line keeps the score
     if (l <= 3) { S.err = 0; S.solved = false; S.fixed = false; }
     if (l >= 4) {                                   // make sure 3 satellites are on the map
       for (let i = 0; i < 3; i++) if (!S.sats[i].placed) Object.assign(S.sats[i], { x: AUTO[i][0], y: AUTO[i][1], placed: true });
@@ -290,7 +286,7 @@
     if (l === 5 && S.err < 0.05) S.err = 0.6;
     if (l < 5) { const s4 = S.sats[3]; Object.assign(s4, { x: DOCK[3][0], y: DOCK[3][1], placed: false }); }
     for (let i = LEVELS[l].n; i < 4; i++) Object.assign(S.sats[i], { x: DOCK[i][0], y: DOCK[i][1], placed: false });
-    say(l === 5 ? `Your phone's clock is out by ${S.err.toFixed(2)} µs, so the circles don't meet.` : '');
+    say(l === 5 ? `Your phone's clock is ${Math.round(S.err * 300)} m out, so the circles don't meet.` : '');
     render();
   }
 
@@ -327,7 +323,7 @@
       const s = S.drag; S.drag = null;
       if (!s.placed) { s.x = DOCK[s.id - 1][0]; s.y = DOCK[s.id - 1][1]; }
       else if (!s.wasPlaced) { pulse(s); }
-      render(); afterMove();
+      render(); afterMove(s);
     } else if (down) {
       const moved = Math.hypot(e.clientX - down.x, e.clientY - down.y);
       if (moved < 12 && down.p.y > DOCK_Y) guess(down.p);
@@ -339,34 +335,25 @@
 
   function pulse(s) { const p = { x: s.x, y: s.y }; S.pulses.push(p); setTimeout(() => { S.pulses.splice(S.pulses.indexOf(p), 1); }, 1300); }
 
-  function afterMove() {
+  function afterMove(moved) {
     const lv = LEVELS[S.level], pl = placed();
-    if (S.level <= 3 && pl.length === lv.n && !S.solved) {
-      if (S.level === 1) { const r = radius(pl[0]); say(`Satellite 1 is ${fmt(r)} from the phone, so the phone is somewhere on that circle. Tap your guess.`); }
-      if (S.level === 2) say('The circles cross in two places. The phone is at one of them. Tap your guess.');
-      if (S.level === 3) say('Only one spot is on all three circles. Tap it.');
-    }
+    if (S.level <= 3 && moved && moved.placed && !S.solved)
+      say(`Satellite ${moved.id} is ${fmt(radius(moved))} from the phone.` + (pl.length === lv.n ? ' Tap where you think the phone is.' : ''));
     if (S.level === 5 && S.sats[3].placed && !S.fixed) say('Now press “Fix my clock”.');
   }
+
 
   function guess(p) {
     if (S.level > 3 || S.solved) return;
     const lv = LEVELS[S.level], pl = placed();
-    if (pl.length < lv.n) { say(`Drag satellite ${pl.length + 1} onto the map first.`); return; }
+    if (pl.length < lv.n) { say(`Add satellite ${pl.length + 1} first.`); return; }
     S.guess = p; S.guesses++;
     const off = dist(p, S.phone); S.lastOff = off;
-    if (S.level === 1) say(`Your guess was ${fmt(off)} away. The phone could be anywhere on that circle.`);
     if (S.level === 2) {
       const xs = intersections(placed().map(s => ({ x: s.x, y: s.y, r: radius(s) })));
-      const nearX = xs.some(x => dist(x, p) < TOL * 1.5);
-      say(nearX ? (off < TOL ? `Lucky! ${fmt(off)} off. But it could just as well have been the other spot. You need a third satellite.`
-                             : `${fmt(off)} off. It was the other spot. With two satellites you can't tell which.`)
-                : `${fmt(off)} off. Try one of the two glowing spots.`);
+      if (xs.some(x => dist(x, p) < TOL * 1.5)) say(off < TOL ? 'Lucky: it could have been either crossing.' : 'It was the other crossing.');
     }
-    if (S.level === 3) {
-      if (off < TOL) { S.solved = true; say(`Found it! Only ${fmt(off)} off. That's trilateration.`, true); }
-      else say(`${fmt(off)} off. Look for the one spot where all three circles meet.`);
-    }
+    if (S.level === 3 && off < TOL) { S.solved = true; say("Found it! That's trilateration.", true); }
     render();
   }
 
@@ -376,7 +363,7 @@
   $('newphone').addEventListener('click', () => { newPhone(); if (S.level === 5) setLevel(5); });
   $('err').addEventListener('input', e => {
     S.err = +e.target.value; S.fixed = false;
-    if (S.level === 4) say(S.err > 0.005 ? `Every circle grows by ${Math.round(S.err * 300)} m, so they no longer meet at one point.` : 'No error: the circles meet exactly at the phone.');
+    if (S.level === 4) say(S.err > 0.005 ? `Every circle grows by ${Math.round(S.err * 300)} m, so they don't meet.` : 'No error: the circles meet at the phone.');
     render();
   });
   $('fix').addEventListener('click', () => {
@@ -385,7 +372,7 @@
       const u = Math.min(1, (now - t0) / 1200), e = 1 - (1 - u) ** 3;
       S.err = from * (1 - e); render();
       if (u < 1) requestAnimationFrame(step);
-      else { S.err = 0; S.fixed = true; S.solved = true; say('All four meet again. The 4th satellite lets your phone work out its own clock error.', true); render(); }
+      else { S.err = 0; S.fixed = true; S.solved = true; say('All four circles meet again: the 4th satellite fixed the clock.', true); render(); }
     })(t0);
   });
   $('again').addEventListener('click', () => { $('closing').hidden = true; newPhone(); setLevel(1); });
