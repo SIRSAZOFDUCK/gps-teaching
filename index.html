@@ -16,9 +16,9 @@
   header { display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap;
            padding:10px max(14px, env(safe-area-inset-left)) 8px max(14px, env(safe-area-inset-right)); }
   h1 { font-size:22px; margin:0; font-weight:700; letter-spacing:.01em; }
-  .levels { display:flex; gap:6px; }
-  .levels button { width:44px; height:44px; border-radius:12px; border:1px solid var(--line); background:var(--navy2);
-                   color:var(--muted); font:600 17px/1 inherit; font-family:inherit; cursor:pointer; }
+  .levels { display:flex; gap:8px; }
+  .levels button { width:58px; height:58px; border-radius:14px; border:1px solid var(--line); background:var(--navy2);
+                   color:var(--muted); font-family:inherit; font-size:24px; font-weight:700; line-height:1; cursor:pointer; }
   .levels button.on { background:var(--cyan); color:var(--navy); border-color:var(--cyan); }
   main { flex:1; display:flex; flex-direction:column; gap:10px; padding:0 max(10px, env(safe-area-inset-left)) 12px max(10px, env(safe-area-inset-right)); min-height:0; }
   #mapwrap { display:flex; justify-content:center; align-items:flex-start; flex:0 0 auto; }
@@ -30,9 +30,10 @@
   #prompt { font-size:19px; font-weight:600; line-height:1.35; margin:0; }
   #feedback { font-size:16px; line-height:1.4; color:var(--white); min-height:1.4em; margin:0; }
   #feedback.good { color:var(--orange); font-weight:700; }
-  .row { display:flex; gap:8px; flex-wrap:wrap; }
+  .row { display:flex; gap:10px; flex-wrap:wrap; }
+  .row button.btn { flex:1 1 auto; min-height:62px; font-size:21px; white-space:nowrap; padding:0 14px; }
   button.btn { min-height:44px; padding:0 16px; border-radius:12px; border:1px solid var(--line); background:var(--navy2);
-               color:var(--white); font:600 16px/1 inherit; font-family:inherit; cursor:pointer; }
+               color:var(--white); font-family:inherit; font-size:16px; font-weight:600; line-height:1; cursor:pointer; }
   button.btn.primary { background:var(--cyan); color:var(--navy); border-color:var(--cyan); }
   button.btn.warn { background:var(--orange); color:var(--navy); border-color:var(--orange); }
   button.btn:disabled { opacity:.4; cursor:default; }
@@ -56,7 +57,8 @@
   @media (orientation:landscape) and (max-height:560px) {
     header { padding-top:6px; padding-bottom:4px; }
     h1 { font-size:18px; }
-    .levels button { width:40px; height:40px; }
+    .levels button { width:44px; height:44px; font-size:19px; }
+    .row button.btn { min-height:48px; font-size:17px; }
     #panel { flex-basis:280px; padding:10px 12px; gap:8px; }
     #prompt { font-size:16px; }
     svg#map { width:min(100%, calc(100dvh - 70px)); }
@@ -250,8 +252,7 @@
       s += `<text class="bigword" x="${Math.min(800, Math.max(200, S.phone.x))}" y="${y}" font-size="${34 * k}" text-anchor="middle">Trilateration!</text>`;
     }
     // satellites (unavailable ones dimmed in the dock)
-    s += `<text class="docktext" x="500" y="${500 + SKY + (500 - SKY) / 2 + 4 * k}" font-size="${12 * k}" text-anchor="middle" opacity=".75">sky zone</text>`;
-    if (act.some(x => !x.placed)) s += `<text class="docktext" x="500" y="${DOCK_Y - 14}" font-size="${13 * k}" text-anchor="middle">drag a satellite onto the map</text>`;
+    s += `<text class="docktext" x="${1000 - 18 * k}" y="${1000 - 18 * k}" font-size="${26 * k}" font-weight="700" text-anchor="end">sky zone</text>`;
     S.sats.forEach((x, i) => {
       const avail = i < lv.n;
       s += satSvg(x, k * 1.25, (S.drag === x ? 'dragging' : '') + (avail ? '' : ' locked'));
