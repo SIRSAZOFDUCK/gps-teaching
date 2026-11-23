@@ -116,7 +116,7 @@
     <p id="feedback"></p>
     <div class="slider" id="sliderbox" hidden>
       <label for="err">Phone clock error: <b id="errval">0</b></label>
-      <input type="range" id="err" min="0" max="1" step="0.01" value="0">
+      <input type="range" id="err" min="0" max="2" step="0.01" value="0">
     </div>
     <div class="row">
       <button class="btn warn" id="fix" hidden>Fix my clock</button>
@@ -135,19 +135,19 @@
 
 <script>
 (() => {
-  const M_PER_UNIT = 5;            // 1000 map units = 5 km
+  const M_PER_UNIT = 10;           // 1000 map units = 10 km (zoomed out so both crossings stay on the map)
   const ERR_UNITS = 300 / M_PER_UNIT; // 1 microsecond of clock error = 300 m
   const DOCK_Y = 150;              // satellites above this line are parked
   const TOL = 30;                  // tap tolerance in map units (150 m)
   const DOCK = [[140, 58], [380, 58], [620, 58], [860, 58]];
-  const AUTO = [[130, 330], [870, 300], [560, 890], [150, 860]];
-  const SKY = 330;                 // satellites must stay at least this far from the centre (the outer sky zone)
-  const PHONE_BOX = 240;           // the phone hides within this distance of the centre   // used when jumping ahead
+  const AUTO = [[300, 420], [700, 320], [560, 720], [300, 680]];
+  const SKY = 160, SKY_OUT = 240;  // the sky zone is the band between these distances from the centre
+  const PHONE_BOX = 110;           // the phone hides within this distance of the centre
   const LEVELS = {
     1: { n:1, name:'Level 1 · One satellite', prompt:'Drag satellite 1 into the sky zone.' },
     2: { n:2, name:'Level 2 · Two satellites', prompt:'Add satellite 2. The phone is on both circles. Tap where you think the phone is.' },
     3: { n:3, name:'Level 3 · Three satellites', prompt:'Add satellite 3. The phone is on all three circles. Tap where you think the phone is.' },
-    4: { n:3, name:'Level 4 · The cheap clock', prompt:"Slide the phone's clock error up. What happens?" },
+    4: { n:3, name:'Level 4 · The cheap clock', prompt:"Phone clocks aren't accurate. See what happens when you increase the phone clock's error." },
     5: { n:4, name:'Level 5 · The fourth satellite', prompt:"Add satellite 4, then press “Fix my clock”." },
   };
   const teacher = new URLSearchParams(location.search).get('teacher') === '1';
@@ -175,7 +175,9 @@
                      'M640 1020 C 660 820, 720 700, 700 520 S 760 200, 820 -20', 'M-20 760 C 220 740, 480 800, 1020 720'];
     for (const d of streets) s += `<path d="${d}" fill="none" stroke="#1a3866" stroke-width="7" stroke-linecap="round" opacity=".7"/>`;
     // shaded outer sky zone (satellites go here)
-    s += `<path d="M0 ${DOCK_Y}H1000V1000H0Z M${500 - SKY} ${500 - SKY}V${500 + SKY}H${500 + SKY}V${500 - SKY}Z" fill="rgba(34,211,238,.07)" fill-rule="evenodd"/>`;
+    const o = 500 - SKY_OUT, i = 500 - SKY, wo = 2 * SKY_OUT, wi = 2 * SKY;
+    s += `<path d="M${o} ${o}h${wo}v${wo}h${-wo}Z M${i} ${i}v${wi}h${wi}v${-wi}Z" fill="rgba(34,211,238,.10)" fill-rule="evenodd"/>`;
+    s += `<rect x="${o}" y="${o}" width="${wo}" height="${wo}" fill="none" stroke="rgba(34,211,238,.35)" stroke-width="1.5" vector-effect="non-scaling-stroke"/>`;
     s += `<line x1="0" y1="${DOCK_Y}" x2="1000" y2="${DOCK_Y}" stroke="#2a4a7c" stroke-dasharray="6 8" vector-effect="non-scaling-stroke"/>`;
     $('bg').innerHTML = s;
   })();
@@ -252,7 +254,8 @@
       s += `<text class="bigword" x="${Math.min(800, Math.max(200, S.phone.x))}" y="${y}" font-size="${34 * k}" text-anchor="middle">Trilateration!</text>`;
     }
     // satellites (unavailable ones dimmed in the dock)
-    s += `<text class="docktext" x="${1000 - 18 * k}" y="${1000 - 18 * k}" font-size="${26 * k}" font-weight="700" text-anchor="end">sky zone</text>`;
+    const zf = Math.min(15 * k, 40);
+    s += `<text class="docktext" x="${500 + SKY_OUT - 10}" y="${500 + (SKY + SKY_OUT) / 2 + zf * 0.35}" font-size="${zf}" font-weight="700" text-anchor="end">sky zone</text>`;
     S.sats.forEach((x, i) => {
       const avail = i < lv.n;
       s += satSvg(x, k * 1.25, (S.drag === x ? 'dragging' : '') + (avail ? '' : ' locked'));
@@ -285,7 +288,7 @@
       for (let i = 0; i < 3; i++) if (!S.sats[i].placed) Object.assign(S.sats[i], { x: AUTO[i][0], y: AUTO[i][1], placed: true });
       S.solved = false;
     }
-    if (l === 5 && S.err < 0.05) S.err = 0.6;
+    if (l === 5 && S.err < 0.05) S.err = 1.2;
     if (l < 5) { const s4 = S.sats[3]; Object.assign(s4, { x: DOCK[3][0], y: DOCK[3][1], placed: false }); }
     for (let i = LEVELS[l].n; i < 4; i++) Object.assign(S.sats[i], { x: DOCK[i][0], y: DOCK[i][1], placed: false });
     say(l === 5 ? `Your phone's clock is ${Math.round(S.err * 300)} m out, so the circles don't meet.` : '');
@@ -314,13 +317,13 @@
     let x = Math.min(975, Math.max(25, p.x)), y = Math.min(975, Math.max(25, p.y));
     // follow the finger freely; a satellite in the middle has no circle until it's back in the sky zone
     S.drag.x = x; S.drag.y = y;
-    S.drag.placed = y > DOCK_Y && !inMiddle(S.drag);
+    S.drag.placed = y > DOCK_Y && inSky(S.drag);
     render();
   });
   function end(e) {
     if (S.drag) {
       const s = S.drag; S.drag = null;
-      if (s.y > DOCK_Y && inMiddle(s)) { glideToSky(s); return; }   // dropped in the middle: glide out to the sky zone
+      if (s.y > DOCK_Y && !inSky(s)) { glideToSky(s); return; }   // dropped outside the sky zone: glide into it
       if (!s.placed) { s.x = DOCK[s.id - 1][0]; s.y = DOCK[s.id - 1][1]; }
       else if (!s.wasPlaced) { pulse(s); }
       render(); afterMove(s);
@@ -330,11 +333,14 @@
       down = null;
     }
   }
-  function inMiddle(p) { return Math.abs(p.x - 500) < SKY && Math.abs(p.y - 500) < SKY; }
+  function inSky(p) { const m = Math.max(Math.abs(p.x - 500), Math.abs(p.y - 500)); return m >= SKY && m <= SKY_OUT; }
   function glideToSky(s) {
-    const dx = s.x - 500, dy = s.y - 500, x0 = s.x, y0 = s.y;
-    const tx = Math.abs(dx) > Math.abs(dy) ? 500 + Math.sign(dx || 1) * SKY : x0;
-    const ty = Math.abs(dx) > Math.abs(dy) ? y0 : 500 + Math.sign(dy || 1) * SKY;
+    const x0 = s.x, y0 = s.y;
+    let dx = Math.max(-SKY_OUT, Math.min(SKY_OUT, x0 - 500)), dy = Math.max(-SKY_OUT, Math.min(SKY_OUT, y0 - 500));
+    if (Math.abs(dx) < SKY && Math.abs(dy) < SKY) {               // in the middle: push out to the nearest edge
+      if (Math.abs(dx) > Math.abs(dy)) dx = Math.sign(dx || 1) * SKY; else dy = Math.sign(dy || 1) * SKY;
+    }
+    const tx = 500 + dx, ty = 500 + dy;
     const t0 = performance.now();
     (function step(now) {
       const t = Math.min(1, (now - t0) / 220), e = 1 - (1 - t) ** 3;
